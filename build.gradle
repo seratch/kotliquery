@@ -1,0 +1,35 @@
+apply plugin: 'kotlin'
+apply plugin: 'idea'
+
+group = 'com.github.seratch'
+version = '0.1.0-SNAPSHOT'
+project.ext {
+    artifactId = 'kotliquery'
+}
+
+buildscript {
+    // http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.jetbrains.kotlin%22%20AND%20a%3A%22kotlin-gradle-plugin%22
+    ext.kotlin_version = '1.0.0-beta-2423'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file('$buildDir/classes/main/')
+    }
+}
+repositories {
+    mavenCentral()
+}
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    testCompile 'com.h2database:h2:1.4.190'
+    testCompile 'junit:junit:4.12'
+}
