@@ -2,11 +2,14 @@
 
 [![Build Status](https://travis-ci.org/seratch/kotliquery.svg)](https://travis-ci.org/seratch/kotliquery)
 
-A handy Database access library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/).
+A handy Database access library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/). 
+
+Kotlin language is still beta, and this library is also still in beta stage.
+When Kotlin 1.0 release, we'll consider releasing the first version of KotliQuery.
 
 ### How to use
 
-KotliQuery is so easy-to-use. After reading this short documentation, you should be able to use this library right now.
+KotliQuery is so easy-to-use. After reading this short documentation, you should be able to start using this library right now.
 
 #### Creating DB Session
 
@@ -41,7 +44,7 @@ session.run(queryOf(insertQuery, "Bob", Date()).asUpdate)
 
 #### Select Queries
 
-KotliQuery's select query execution should be prepared like this:
+Prepare select query execution in the following steps:
 
 - Create `Query` object by using `queryOf` factory
 - Bind extractor function (`(Row) -> A`) to the `Query` object via `#map` method
