@@ -9,7 +9,7 @@ import kotliquery.action.UpdateQueryAction
  */
 data class Query(
         val statement: String,
-        val params: List<Any>) {
+        val params: List<Any?>) {
 
     fun <A> map(extractor: (Row) -> A?): ResultQueryActionBuilder<A> {
         return ResultQueryActionBuilder(this, extractor)

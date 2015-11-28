@@ -14,6 +14,9 @@ import java.sql.Timestamp
 import java.time.*
 import java.util.*
 
+/**
+ * Database Session.
+ */
 open class Session(
         open val connection: Connection,
         open val returnGeneratedKeys: Boolean = false,

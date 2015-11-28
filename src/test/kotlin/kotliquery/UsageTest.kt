@@ -2,6 +2,7 @@ package kotliquery
 
 import org.junit.Test
 import java.sql.DriverManager
+import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -12,10 +13,10 @@ class UsageTest : LoanPattern {
     data class Member(
             val id: Int,
             val name: String?,
-            val createdAt: Date)
+            val createdAt: ZonedDateTime)
 
     val toMember: (Row) -> Member = { row ->
-        Member(row.int("id")!!, row.string("name"), row.sqlTimestamp("created_at")!!)
+        Member(row.int("id")!!, row.string("name"), row.zonedDateTime("created_at")!!)
     }
 
     val insert = "insert into members (name,  created_at) values (?, ?)"

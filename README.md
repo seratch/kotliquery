@@ -61,10 +61,10 @@ Extractor function can return any type of result from `ResultSet`.
 data class Member(
   val id: Int,
   val name: String?,
-  val createdAt: java.util.Date)
+  val createdAt: java.time.ZonedDateTime)
 
 val toMember: (Row) -> Member = { row -> 
-  Member(row.int("id")!!, row.string("name"), row.sqlTimestamp("created_at")!!)
+  Member(row.int("id")!!, row.string("name"), row.zonedDateTime("created_at")!!)
 }
 
 val allMembersQuery = queryOf("select id, name, created_at from members").map(toMember).asList
