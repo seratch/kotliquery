@@ -61,6 +61,7 @@ signing {
     sign configurations.archives
 }
 
+try {
 uploadArchives {
     repositories {
         mavenDeployer {
@@ -101,3 +102,4 @@ uploadArchives {
         }
     }
 }
+} catch (MissingPropertyException e) { e.printStackTrace() }
