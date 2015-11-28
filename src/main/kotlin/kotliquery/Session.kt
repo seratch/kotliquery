@@ -1,5 +1,9 @@
 package kotliquery
 
+import kotliquery.action.ExecuteQueryAction
+import kotliquery.action.ListResultQueryAction
+import kotliquery.action.NullableResultQueryAction
+import kotliquery.action.UpdateQueryAction
 import java.sql.PreparedStatement
 import java.sql.Statement
 
@@ -19,6 +23,7 @@ data class Session(
             connection.underlying.prepareStatement(query.statement)
         }
         query.params.withIndex().forEach { param ->
+            // TODO: fix
             stmt.setObject(param.index + 1, param.value)
         }
         return stmt
@@ -62,4 +67,19 @@ data class Session(
         })
     }
 
+    fun run(action: ExecuteQueryAction): Boolean {
+        return action.runWithSession(this)
+    }
+
+    fun run(action: UpdateQueryAction): Int {
+        return action.runWithSession(this)
+    }
+
+    fun run<A>(action: ListResultQueryAction<A>): List<A> {
+        return action.runWithSession(this)
+    }
+
+    fun run<A>(action: NullableResultQueryAction<A>): A? {
+        return action.runWithSession(this)
+    }
 }

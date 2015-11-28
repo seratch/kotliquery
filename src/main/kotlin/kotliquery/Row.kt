@@ -232,7 +232,7 @@ data class Row(
         return nullable(underlying.getInt(columnLabel))
     }
 
-    fun metaData(columnLabel: String): ResultSetMetaData {
+    fun metaData(): ResultSetMetaData {
         return underlying.metaData
     }
 

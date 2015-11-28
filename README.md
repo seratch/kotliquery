@@ -1,5 +1,7 @@
 ## kotliquery
 
+[![Build Status](https://travis-ci.org/seratch/kotliquery.svg)](https://travis-ci.org/seratch/kotliquery)
+
 A handy Database access library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/).
 
 ### Example
@@ -14,34 +16,36 @@ data class Member(
   val name: String?,
   val createdAt: Date)
 
+val toMember: (Row) -> Member = {
+  row -> Member(row.int("id")!!, row.string("name"), row.sqlTimestamp("created_at")!!)
+}
+
 val conn = DriverManager.getConnection("jdbc:h2:mem:hello", "user", "pass")
 val session = Session(Connection(conn, "org.h2.Driver"))
 
-session.execute(queryOf("""
+session.run(queryOf("""
   create table members (
     id serial not null primary key,
     name varchar(64),
     created_at timestamp not null
   )
-"""))
+""").asExecute)
 
-session.update(queryOf("insert into members (name,  created_at) values (?, ?)", "Alice", Date()))
-session.update(queryOf("insert into members (name,  created_at) values (?, ?)", "Bob", Date()))
+session.run(queryOf("insert into members (name,  created_at) values (?, ?)", "Alice", Date()).asUpdate)
+session.run(queryOf("insert into members (name,  created_at) values (?, ?)", "Bob", Date()).asUpdate)
 
-val ids: List<Int> = session.list(queryOf("select id from members"), { row -> row.int("id") })
+val allIdsQuery = queryOf("select id from members").map { row -> row.int("id") }.asList
+val ids: List<Int> = session.run(allIdsQuery)
 
 session.forEach(queryOf("select id from members"), { row -> 
   // working with large result sets
 })
 
-val members: List<Member> = session.list(queryOf("select id, name, created_at from members"), { row ->
-    Member(row.int("id")!!, row.string("name"), row.sqlTimestamp("created_at")!!)
-})
+val allMembersQuery = queryOf("select id, name, created_at from members").map(toMember).asList
+val members: List<Member> = session.run(allMembersQuery)
 
-val nameQuery = "select id, name, created_at from members where name = ?"
-val alice: Member? = session.single(queryOf(nameQuery, "Alice"), { row ->
-    Member(row.int("id")!!, row.string("name"), row.sqlTimestamp("created_at")!!)
-})
+val aliceQuery = queryOf("select id, name, created_at from members where name = ?", "Alice").map(toMember).asSingle
+val alice: Member? = session.run(aliceQuery)
 ```
 
 ## License
