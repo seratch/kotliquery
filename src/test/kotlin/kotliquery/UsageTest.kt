@@ -14,8 +14,7 @@ class UsageTest : LoanPattern {
             val name: String?,
             val createdAt: Date)
 
-    val toMember: (Row) -> Member = {
-        row ->
+    val toMember: (Row) -> Member = { row ->
         Member(row.int("id")!!, row.string("name"), row.sqlTimestamp("created_at")!!)
     }
 
@@ -24,6 +23,7 @@ class UsageTest : LoanPattern {
     fun borrowConnection(): java.sql.Connection {
         return DriverManager.getConnection("jdbc:h2:mem:hello", "user", "pass")
     }
+
     val driverName = "org.h2.Driver"
 
     @Test
@@ -108,6 +108,39 @@ create table members (
 
             val chris: Member? = session.run(queryOf(nameQuery, "Chris").map(toMember).asSingle)
             assertNull(chris)
+        }
+    }
+
+    @Test
+    fun transactionUsage() {
+        using(borrowConnection()) { conn ->
+
+            val idsQuery = queryOf("select id from members").map { row -> row.int("id") }.asList
+
+            val session = Session(Connection(conn, driverName))
+
+            session.run(queryOf("drop table members if exists").asExecute)
+            session.run(queryOf("""
+create table members (
+  id serial not null primary key,
+  name varchar(64),
+  created_at timestamp not null
+)
+        """).asExecute)
+
+            session.run(queryOf(insert, "Alice", Date()).asUpdate)
+            session.transaction { tx -> tx.run(queryOf(insert, "Bob", Date()).asUpdate) }
+            assertEquals(2, session.run(idsQuery).size)
+
+            try {
+                session.transaction { tx ->
+                    tx.run(queryOf(insert, "Chris", Date()).asUpdate)
+                    assertEquals(3, tx.run(idsQuery).size)
+                    throw RuntimeException()
+                }
+            } catch (e: RuntimeException) {
+            }
+            assertEquals(2, session.run(idsQuery).size)
         }
     }
 

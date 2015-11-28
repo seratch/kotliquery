@@ -5,11 +5,15 @@ package kotliquery
  */
 interface LoanPattern {
 
-    fun <A : AutoCloseable, R> using(s: A, f: (A) -> R): R {
+    fun <A : AutoCloseable, R> using(closeable: A?, f: (A) -> R): R {
         try {
-            return f(s)
+            if (closeable != null) {
+                return f(closeable)
+            } else {
+                throw IllegalStateException("Closeable resource is unexpectedly null.")
+            }
         } finally {
-            s.close()
+            closeable?.close()
         }
     }
 
