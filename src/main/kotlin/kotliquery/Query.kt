@@ -11,7 +11,7 @@ data class Query(
         val statement: String,
         val params: List<Any>) {
 
-    fun map<A>(extractor: (Row) -> A?): ResultQueryActionBuilder<A> {
+    fun <A> map(extractor: (Row) -> A?): ResultQueryActionBuilder<A> {
         return ResultQueryActionBuilder(this, extractor)
     }
 

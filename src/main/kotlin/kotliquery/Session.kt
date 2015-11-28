@@ -29,42 +29,42 @@ data class Session(
         return stmt
     }
 
-    private fun rows<A>(query: Query, extractor: (Row) -> A?): List<A> {
-        return using(createPreparedStatement(query), { stmt ->
-            using(stmt.executeQuery(), { rs ->
+    private fun <A> rows(query: Query, extractor: (Row) -> A?): List<A> {
+        return using(createPreparedStatement(query)) { stmt ->
+            using(stmt.executeQuery()) { rs ->
                 val rows = Row(rs).map { row -> extractor.invoke(row) }
                 rows.filter { r -> r != null }.map { r -> r!! }.toList()
-            })
-        })
+            }
+        }
     }
 
-    fun single<A>(query: Query, extractor: (Row) -> A?): A? {
+    fun <A> single(query: Query, extractor: (Row) -> A?): A? {
         val rs = rows(query, extractor)
         return if (rs.size > 0) rs.first() else null
     }
 
-    fun list<A>(query: Query, extractor: (Row) -> A?): List<A> {
+    fun <A> list(query: Query, extractor: (Row) -> A?): List<A> {
         return rows(query, extractor).toList()
     }
 
     fun forEach(query: Query, operator: (Row) -> Unit): Unit {
-        using(createPreparedStatement(query), { stmt ->
-            using(stmt.executeQuery(), { rs ->
+        using(createPreparedStatement(query)) { stmt ->
+            using(stmt.executeQuery()) { rs ->
                 Row(rs).forEach { row -> operator.invoke(row) }
-            })
-        })
+            }
+        }
     }
 
     fun execute(query: Query): Boolean {
-        return using(createPreparedStatement(query), { stmt ->
+        return using(createPreparedStatement(query)) { stmt ->
             stmt.execute()
-        })
+        }
     }
 
     fun update(query: Query): Int {
-        return using(createPreparedStatement(query), { stmt ->
+        return using(createPreparedStatement(query)) { stmt ->
             stmt.executeUpdate()
-        })
+        }
     }
 
     fun run(action: ExecuteQueryAction): Boolean {
@@ -75,11 +75,11 @@ data class Session(
         return action.runWithSession(this)
     }
 
-    fun run<A>(action: ListResultQueryAction<A>): List<A> {
+    fun <A> run(action: ListResultQueryAction<A>): List<A> {
         return action.runWithSession(this)
     }
 
-    fun run<A>(action: NullableResultQueryAction<A>): A? {
+    fun <A> run(action: NullableResultQueryAction<A>): A? {
         return action.runWithSession(this)
     }
 }

@@ -21,7 +21,7 @@ buildscript {
 idea {
     module {
         inheritOutputDirs = false
-        outputDir = file("$buildDir/classes/main/")
+        outputDir = file('build/classes/main/')
     }
 }
 repositories {

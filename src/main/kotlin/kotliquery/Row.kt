@@ -12,7 +12,7 @@ data class Row(
         val underlying: ResultSet,
         val cursor: Int = 0) : Sequence<Row> {
 
-    private fun nullable<A>(v: A): A? {
+    private fun <A> nullable(v: A): A? {
         return if (underlying.wasNull()) null else v
     }
 
