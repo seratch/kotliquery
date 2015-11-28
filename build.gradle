@@ -1,11 +1,17 @@
 apply plugin: 'kotlin'
 apply plugin: 'idea'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 group = 'com.github.seratch'
 version = '0.1.0-SNAPSHOT'
 project.ext {
     artifactId = 'kotliquery'
 }
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 buildscript {
     // http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.jetbrains.kotlin%22%20AND%20a%3A%22kotlin-gradle-plugin%22
@@ -18,19 +24,80 @@ buildscript {
     }
 }
 
-idea {
-    module {
-        inheritOutputDirs = false
-        outputDir = file('build/classes/main/')
-    }
-}
 repositories {
     mavenCentral()
 }
+
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'org.slf4j:slf4j-api:1.7.13'
     compile 'joda-time:joda-time:2.9.1'
     testCompile 'com.h2database:h2:1.4.190'
     testCompile 'junit:junit:4.12'
+}
+
+idea {
+    module {
+        inheritOutputDirs = false
+        outputDir = file('build/classes/main/')
+    }
+}
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives javadocJar, sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+            pom.project {
+                name 'kotliquery'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'A handy Database access library in Kotlin'
+                url 'http://github.com/seatch/kotliquery'
+                scm {
+                    url 'https://github.com/seatch/kotliquery'
+                    connection 'scm:git:git://github.com/seatch/kotliquery.git'
+                    developerConnection 'scm:git:git@github.com:seatch/kotliquery.git'
+                }
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'http://www.opensource.org/licenses/mit-license.php'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'seratch'
+                        name 'Kazuhio Sera'
+                        email 'seratch@gmail.com'
+                    }
+                }
+            }
+        }
+    }
 }

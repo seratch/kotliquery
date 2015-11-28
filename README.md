@@ -7,7 +7,34 @@ A handy Database access library in Kotlin. Highly inspired from [ScalikeJDBC](ht
 Kotlin language is still beta, and this library is also still in beta stage.
 When Kotlin 1.0 release, we'll consider releasing the first version of KotliQuery.
 
-### How to use
+### Getting Started
+
+#### build.gradle
+
+```groovy
+apply plugin: 'kotlin'
+
+buildscript {
+    ext.kotlin_version = '1.0.0-beta-2423'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+repositories {
+    jcenter()
+    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
+}
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'com.github.seratch:kotlin-query:0.1.0-SNAPSHOT'
+    compile 'com.h2database:h2:1.4.190'
+}
+```
+
+### Example
 
 KotliQuery is so easy-to-use. After reading this short documentation, you should be able to start using this library right now.
 
@@ -76,12 +103,12 @@ val aliceQuery = queryOf("select id, name, created_at from members where name = 
 val alice: Member? = session.run(aliceQuery)
 ```
 
-#### Working with large data set
+#### Working with Large Dataset
 
 `#forEach` allows you to make some side-effect in iterations. This API is useful for handling large `ResultSet`.
 
 ```kotlin
-session.forEach(queryOf("select id from members"), { row ->
+session.forEach(queryOf("select id from members")) { row ->
   // working with large data set
 })
 ```
