@@ -9,6 +9,10 @@ When Kotlin 1.0 release, we'll consider releasing the first version of KotliQuer
 
 ### Getting Started
 
+You can try this library with Gradle right now. See the sample project:
+
+https://github.com/seratch/kotliquery/tree/master/sample
+
 #### build.gradle
 
 ```groovy
@@ -24,7 +28,7 @@ buildscript {
     }
 }
 repositories {
-    jcenter()
+    mavenCentral()
     maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 }
 dependencies {
@@ -36,7 +40,7 @@ dependencies {
 
 ### Example
 
-KotliQuery is so easy-to-use. After reading this short documentation, you should be able to start using this library right now.
+KotliQuery is very easy-to-use. After reading this short documentation, you will have learnt enough.
 
 #### Creating DB Session
 
