@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-class UsageTest : LoanPattern {
+class UsageTest {
 
     data class Member(
             val id: Int,

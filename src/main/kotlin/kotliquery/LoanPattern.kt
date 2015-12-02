@@ -3,7 +3,7 @@ package kotliquery
 /**
  * Loan Pattern idiom.
  */
-interface LoanPattern {
+object LoanPattern {
 
     fun <A : AutoCloseable, R> using(closeable: A?, f: (A) -> R): R {
         try {
