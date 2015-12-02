@@ -35,6 +35,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'com.github.seratch:kotlin-query:0.1.0-SNAPSHOT'
     compile 'com.h2database:h2:1.4.190'
+    compile 'com.zaxxer:HikariCP:2.4.2'
 }
 ```
 
@@ -50,6 +51,21 @@ KotliQuery is very easy-to-use. After reading this short documentation, you will
 import kotliquery.*
 
 val session = sessionOf("jdbc:h2:mem:hello", "user", "pass")
+```
+
+#### HikariCP
+
+Using connection pool would be better for serious programming.
+
+[HikariCP](https://github.com/brettwooldridge/HikariCP) is blazingly fast and so handy.
+
+```kotlin
+HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
+
+using(sessionOf(HikariCP.dataSource())) { session ->
+
+     // working with the session
+}
 ```
 
 #### DDL Execution

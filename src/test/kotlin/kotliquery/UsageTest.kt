@@ -145,4 +145,27 @@ create table members (
         }
     }
 
+    @Test
+    fun HikariCPUsage() {
+        HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
+
+        using(sessionOf(HikariCP.dataSource())) { session ->
+
+            session.run(queryOf("drop table members if exists").asExecute)
+            session.run(queryOf("""
+create table members (
+  id serial not null primary key,
+  name varchar(64),
+  created_at timestamp not null
+)
+        """).asExecute)
+
+            listOf("Alice", "Bob").forEach { name ->
+                session.update(queryOf(insert, name, Date()))
+            }
+            val ids: List<Int> = session.list(queryOf("select id from members")) { row -> row.int("id") }
+            assertEquals(2, ids.size)
+        }
+    }
+
 }
