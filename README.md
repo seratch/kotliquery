@@ -19,7 +19,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-2423'
+    ext.kotlin_version = '1.0.0-beta-4589'
     repositories {
         mavenCentral()
     }
@@ -155,4 +155,4 @@ session.transaction { tx ->
 
 (The MIT License)
 
-Copyright (c) 2015 Kazuhiro Sera
+Copyright (c) 2015 - Kazuhiro Sera
