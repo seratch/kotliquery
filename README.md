@@ -19,7 +19,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.0.0-beta-4589'
+    ext.kotlin_version = '1.0.0-rc-1036'
     repositories {
         mavenCentral()
     }
@@ -33,9 +33,9 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotlin-query:0.1.0-SNAPSHOT'
-    compile 'com.h2database:h2:1.4.190'
-    compile 'com.zaxxer:HikariCP:2.4.2'
+    compile 'com.github.seratch:kotlin-query:0.1.0-rc-1'
+    compile 'com.h2database:h2:1.4.191'
+    compile 'com.zaxxer:HikariCP:2.4.3'
 }
 ```
 
