@@ -19,7 +19,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.0.0-rc-1036'
+    ext.kotlin_version = '1.0.0'
     repositories {
         mavenCentral()
     }
@@ -33,7 +33,7 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotlin-query:0.1.0-rc-1'
+    compile 'com.github.seratch:kotlin-query:0.1.0'
     compile 'com.h2database:h2:1.4.191'
     compile 'com.zaxxer:HikariCP:2.4.3'
 }
@@ -63,8 +63,7 @@ Using connection pool would be better for serious programming.
 HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
 
 using(sessionOf(HikariCP.dataSource())) { session ->
-
-     // working with the session
+   // working with the session
 }
 ```
 
