@@ -86,11 +86,11 @@ uploadArchives {
                 packaging 'jar'
                 // optionally artifactId can be defined here
                 description 'A handy Database access library in Kotlin'
-                url 'http://github.com/seatch/kotliquery'
+                url 'http://github.com/seratch/kotliquery'
                 scm {
-                    url 'https://github.com/seatch/kotliquery'
-                    connection 'scm:git:git://github.com/seatch/kotliquery.git'
-                    developerConnection 'scm:git:git@github.com:seatch/kotliquery.git'
+                    url 'https://github.com/seratch/kotliquery'
+                    connection 'scm:git:git://github.com/seratch/kotliquery.git'
+                    developerConnection 'scm:git:git@github.com:seratch/kotliquery.git'
                 }
                 licenses {
                     license {
