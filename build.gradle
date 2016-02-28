@@ -4,7 +4,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'com.github.seratch'
-version = '1.0.0'
+version = '1.0.1'
 project.ext {
     artifactId = 'kotliquery'
 }
@@ -15,7 +15,7 @@ targetCompatibility = 1.8
 
 buildscript {
     // http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.jetbrains.kotlin%22%20AND%20a%3A%22kotlin-gradle-plugin%22
-    ext.kotlin_version = '1.0.0-rc-1036'
+    ext.kotlin_version = '1.0.0'
     repositories {
         mavenCentral()
     }
@@ -47,6 +47,13 @@ idea {
     module {
         inheritOutputDirs = false
         outputDir = file('build/classes/main/')
+    }
+}
+
+test {
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED"
+        testLogging.showStandardStreams = true
     }
 }
 
