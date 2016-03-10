@@ -33,7 +33,7 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotlin-query:1.0.1'
+    compile 'com.github.seratch:kotliquery:1.0.1'
     compile 'com.h2database:h2:1.4.191'
     compile 'com.zaxxer:HikariCP:2.4.3'
 }
