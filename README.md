@@ -29,7 +29,6 @@ buildscript {
 }
 repositories {
     mavenCentral()
-    maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
