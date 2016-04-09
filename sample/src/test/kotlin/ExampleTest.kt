@@ -8,7 +8,7 @@ class ExampleTest {
     val example = Example()
 
     val toMember: (Row) -> Member = { row ->
-        Member(row.int("id")!!, row.string("name"), row.zonedDateTime("created_at")!!)
+        Member(row.int("id"), row.stringOrNull("name"), row.zonedDateTime("created_at"))
     }
 
     @Before

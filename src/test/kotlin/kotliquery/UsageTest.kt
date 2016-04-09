@@ -16,7 +16,7 @@ class UsageTest {
             val createdAt: ZonedDateTime)
 
     val toMember: (Row) -> Member = { row ->
-        Member(row.int("id")!!, row.string("name"), row.zonedDateTime("created_at")!!)
+        Member(row.int("id"), row.stringOrNull("name"), row.zonedDateTime("created_at"))
     }
 
     val insert = "insert into members (name,  created_at) values (?, ?)"

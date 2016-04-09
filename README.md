@@ -110,7 +110,11 @@ data class Member(
   val createdAt: java.time.ZonedDateTime)
 
 val toMember: (Row) -> Member = { row -> 
-  Member(row.int("id")!!, row.string("name"), row.zonedDateTime("created_at")!!)
+  Member(
+    row.int("id"), 
+    row.stringOrNull("name"), 
+    row.zonedDateTime("created_at")
+  )
 }
 
 val allMembersQuery = queryOf("select id, name, created_at from members").map(toMember).asList
