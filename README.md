@@ -2,9 +2,7 @@
 
 [![Build Status](https://travis-ci.org/seratch/kotliquery.svg)](https://travis-ci.org/seratch/kotliquery)
 
-A handy Database access library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/). 
-
-KotliQuery is a tidy RDB client library. This library focuses on providing handy and Kotlin-ish API to issue queries and extract values from JDBC ResultSet iterator.
+A handy RDB client library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/). This library focuses on providing handy and Kotlin-ish API to issue a query and extract values from its JDBC ResultSet iterator.
 
 ### Getting Started
 
