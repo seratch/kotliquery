@@ -4,8 +4,7 @@
 
 A handy Database access library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/). 
 
-Kotlin language is still beta, and this library is also still in beta stage.
-When Kotlin 1.0 release, we'll consider releasing the first version of KotliQuery.
+KotliQuery is a tidy RDB client library. This library focuses on providing handy and Kotlin-ish API to issue queries and extract values from JDBC ResultSet iterator.
 
 ### Getting Started
 
@@ -19,7 +18,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.0.1-2'
+    ext.kotlin_version = '1.0.3'
     repositories {
         mavenCentral()
     }
@@ -32,9 +31,9 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotliquery:1.1.0'
-    compile 'com.h2database:h2:1.4.191'
-    compile 'com.zaxxer:HikariCP:2.4.5'
+    compile 'com.github.seratch:kotliquery:1.1.1'
+    compile 'com.h2database:h2:1.4.192'
+    compile 'com.zaxxer:HikariCP:2.4.6'
 }
 ```
 
