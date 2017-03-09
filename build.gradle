@@ -4,7 +4,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'com.github.seratch'
-version = '1.1.1'
+version = '1.1.2'
 project.ext {
     artifactId = 'kotliquery'
 }
@@ -15,7 +15,7 @@ targetCompatibility = 1.8
 
 buildscript {
     // http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.jetbrains.kotlin%22%20AND%20a%3A%22kotlin-gradle-plugin%22
-    ext.kotlin_version = '1.0.3'
+    ext.kotlin_version = '1.1.0'
     ext.kotlinVersion = ext.kotlin_version
     repositories {
         mavenCentral()
@@ -37,10 +37,10 @@ repositories {
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
-    compile 'org.slf4j:slf4j-api:1.7.21'
-    compile 'joda-time:joda-time:2.9.4'
-    provided 'com.zaxxer:HikariCP:2.4.6'
-    testCompile 'com.h2database:h2:1.4.192'
+    compile 'org.slf4j:slf4j-api:1.7.24'
+    compile 'joda-time:joda-time:2.9.7'
+    provided 'com.zaxxer:HikariCP:2.6.0'
+    testCompile 'com.h2database:h2:1.4.193'
     testCompile 'junit:junit:4.12'
 }
 
@@ -54,9 +54,7 @@ idea {
 test {
     testLogging {
         events "PASSED", "FAILED", "SKIPPED"
-        testLogging.showStandardStreams = true
-    }
-}
+        testLogging.showStandardStreams = true } }
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
