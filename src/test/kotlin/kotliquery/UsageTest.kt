@@ -69,6 +69,33 @@ create table members (
         }
     }
 
+
+    @Test
+    fun addNewWithId() {
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+            session.run(queryOf("drop table members if exists").asExecute)
+            session.run(queryOf("""
+create table members (
+  id serial not null primary key,
+  name varchar(64),
+  created_at timestamp not null
+)
+        """).asExecute)
+
+            // session usage example
+            val createdID = session.run(queryOf(insert, "Fred", Date()).asUpdateWithKeys)
+            assertEquals(1, createdID)
+
+            //action usage example
+            val createdID2 = session.updateWithKeys(queryOf(insert, "Jane", Date()))
+            assertEquals(2, createdID2)
+        }
+    }
+
+
+
+
     @Test
     fun actionUsage() {
         using(borrowConnection()) { conn ->
