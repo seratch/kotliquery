@@ -1,9 +1,6 @@
 package kotliquery
 
-import kotliquery.action.ExecuteQueryAction
-import kotliquery.action.ListResultQueryAction
-import kotliquery.action.NullableResultQueryAction
-import kotliquery.action.UpdateQueryAction
+import kotliquery.action.*
 import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.math.BigDecimal
@@ -131,11 +128,26 @@ open class Session(
         }
     }
 
+    fun updateAndReturnGeneratedKey (query: Query): Long? {
+        warningForTransactionMode()
+        return using(createPreparedStatement(query)) { stmt ->
+            if (stmt.executeUpdate() > 0) {
+                val rs = stmt.getGeneratedKeys()
+                rs.next()
+                rs.getLong(1)
+            }
+            else null
+        }
+    }
+
     fun run(action: ExecuteQueryAction): Boolean {
         return action.runWithSession(this)
     }
 
     fun run(action: UpdateQueryAction): Int {
+        return action.runWithSession(this)
+    }
+    fun run(action: UpdateAndReturnGeneratedKeyQueryAction): Long? {
         return action.runWithSession(this)
     }
 
