@@ -128,7 +128,7 @@ open class Session(
         }
     }
 
-    fun updateWithKeys(query: Query): Long? {
+    fun updateAndReturnGeneratedKey (query: Query): Long? {
         warningForTransactionMode()
         return using(createPreparedStatement(query)) { stmt ->
             if (stmt.executeUpdate() > 0) {
@@ -147,7 +147,7 @@ open class Session(
     fun run(action: UpdateQueryAction): Int {
         return action.runWithSession(this)
     }
-    fun run(action: UpdateWithKeysQueryAction): Long? {
+    fun run(action: UpdateAndReturnGeneratedKeyQueryAction): Long? {
         return action.runWithSession(this)
     }
 

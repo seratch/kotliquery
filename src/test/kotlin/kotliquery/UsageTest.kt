@@ -84,11 +84,11 @@ create table members (
         """).asExecute)
 
             // session usage example
-            val createdID = session.run(queryOf(insert, "Fred", Date()).asUpdateWithKeys)
+            val createdID = session.run(queryOf(insert, "Fred", Date()).asUpdateAndReturnGeneratedKey)
             assertEquals(1, createdID)
 
             //action usage example
-            val createdID2 = session.updateWithKeys(queryOf(insert, "Jane", Date()))
+            val createdID2 = session.updateAndReturnGeneratedKey(queryOf(insert, "Jane", Date()))
             assertEquals(2, createdID2)
         }
     }

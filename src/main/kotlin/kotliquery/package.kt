@@ -13,13 +13,13 @@ fun queryOf(statement: String, vararg params: Any): Query {
 /**
  * Builds Session object.
  */
-fun sessionOf(url: String, user: String, password: String, returnGenKeys: Boolean = false): Session {
+fun sessionOf(url: String, user: String, password: String, returnGeneratedKey: Boolean = false): Session {
     val conn = DriverManager.getConnection(url, user, password)
-    return Session(Connection(conn), returnGenKeys)
+    return Session(Connection(conn), returnGeneratedKey)
 }
 
-fun sessionOf(dataSource: DataSource, returnGenKeys: Boolean = false): Session {
-    return Session(Connection(dataSource.connection), returnGenKeys)
+fun sessionOf(dataSource: DataSource, returnGeneratedKey: Boolean = false): Session {
+    return Session(Connection(dataSource.connection), returnGeneratedKey)
 }
 
 fun <A : AutoCloseable, R> using(closeable: A?, f: (A) -> R): R {
