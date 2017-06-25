@@ -3,6 +3,7 @@ package kotliquery
 import kotliquery.action.ExecuteQueryAction
 import kotliquery.action.ResultQueryActionBuilder
 import kotliquery.action.UpdateQueryAction
+import kotliquery.action.UpdateWithKeysQueryAction
 
 /**
  * Database Query.
@@ -17,6 +18,10 @@ data class Query(
 
     val asUpdate: UpdateQueryAction by lazy {
         UpdateQueryAction(this)
+    }
+
+    val asUpdateWithKeys: UpdateWithKeysQueryAction by lazy {
+        UpdateWithKeysQueryAction(this)
     }
 
     val asExecute: ExecuteQueryAction by lazy {
