@@ -210,7 +210,7 @@ create table members (
             assertEquals("""SELECT * FROM dual t
             WHERE (? IS NULL OR ? = ?) AND (? IS NULL OR ? = ?) AND (? IS NULL OR ? = ?)
             {1: '1', 2: 2, 3: 2, 4: 2, 5: '1', 6: TRUE, 7: TRUE, 8: TRUE, 9: '1'}""".normalizeSpaces(),
-                    preparedStmt.toString().split(": ", limit = 2)[1].normalizeSpaces())
+                    preparedStmt.toString().extractQueryFromPreparedStmt())
         }
 
         withPreparedStmt(queryOf("""SELECT * FROM dual t WHERE (:param1 IS NULL OR :param2 = :param2)""",
@@ -218,9 +218,27 @@ create table members (
         ) { preparedStmt ->
             assertEquals("""SELECT * FROM dual t WHERE (? IS NULL OR ? = ?)
             {1: NULL, 2: 2, 3: 2}""".normalizeSpaces(),
-                    preparedStmt.toString().split(": ", limit = 2)[1].normalizeSpaces())
+                    preparedStmt.toString().extractQueryFromPreparedStmt())
         }
 
+    }
+
+    @Test
+    fun nullParams() {
+        withPreparedStmt(queryOf("SELECT * FROM dual t WHERE ? IS NULL", null)) { preparedStmt ->
+            assertEquals("SELECT * FROM dual t WHERE ? IS NULL {1: NULL}",
+                    preparedStmt.toString().extractQueryFromPreparedStmt())
+        }
+
+        withPreparedStmt(queryOf("SELECT * FROM dual t WHERE ? = 1 AND ? IS NULL", 1, null)) { preparedStmt ->
+            assertEquals("SELECT * FROM dual t WHERE ? = 1 AND ? IS NULL {1: 1, 2: NULL}",
+                    preparedStmt.toString().extractQueryFromPreparedStmt())
+        }
+
+        withPreparedStmt(queryOf("SELECT * FROM dual t WHERE ? = 1 AND ? IS NULL AND ? = 3", 1, null, 3)) { preparedStmt ->
+            assertEquals("SELECT * FROM dual t WHERE ? = 1 AND ? IS NULL AND ? = 3 {1: 1, 2: NULL, 3: 3}",
+                    preparedStmt.toString().extractQueryFromPreparedStmt())
+        }
     }
 
     fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
@@ -231,6 +249,10 @@ create table members (
 
             closure(preparedStmt)
         }
+    }
+
+    fun String.extractQueryFromPreparedStmt(): String {
+        return this.split(": ", limit = 2)[1].normalizeSpaces()
     }
 
 }
