@@ -2,7 +2,7 @@ apply plugin: 'kotlin'
 apply plugin: 'idea'
 
 buildscript {
-    ext.kotlin_version = '1.1.0'
+    ext.kotlin_version = '1.1.3-2'
     repositories {
         mavenCentral()
     }
@@ -15,10 +15,10 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotliquery:1.1.2'
-    compile 'com.h2database:h2:1.4.193'
+    compile 'com.github.seratch:kotliquery:1.1.4'
+    compile 'com.h2database:h2:1.4.196'
     testCompile 'junit:junit:4.12'
-    testCompile 'ch.qos.logback:logback-classic:1.2.1'
+    testCompile 'ch.qos.logback:logback-classic:1.2.3'
 }
 idea {
     module {
