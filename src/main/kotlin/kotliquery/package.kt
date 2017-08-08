@@ -7,7 +7,11 @@ import javax.sql.DataSource
  * Builds Query object.
  */
 fun queryOf(statement: String, vararg params: Any): Query {
-    return Query(statement, params.toList())
+    return Query(statement, params = params.toList())
+}
+
+fun queryOf(statement: String, paramMap: Map<String, Any?>): Query {
+    return Query(statement, paramMap = paramMap)
 }
 
 /**

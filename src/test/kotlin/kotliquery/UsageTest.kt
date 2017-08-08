@@ -2,6 +2,7 @@ package kotliquery
 
 import org.junit.Test
 import java.sql.DriverManager
+import java.sql.PreparedStatement
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
@@ -192,6 +193,43 @@ create table members (
             }
             val ids: List<Int> = session.list(queryOf("select id from members")) { row -> row.int("id") }
             assertEquals(2, ids.size)
+        }
+    }
+
+
+    @Test
+    fun stmtParamPopulation() {
+        withPreparedStmt(queryOf("""SELECT * FROM dual t
+            WHERE (:param1 IS NULL OR :param2 = :param2)
+            AND (:param2 IS NULL OR :param1 = :param3)
+            AND (:param3 IS NULL OR :param3 = :param1)""",
+                paramMap = mapOf("param1" to "1",
+                        "param2" to 2,
+                        "param3" to true))
+        ) { preparedStmt ->
+            assertEquals("""SELECT * FROM dual t
+            WHERE (? IS NULL OR ? = ?) AND (? IS NULL OR ? = ?) AND (? IS NULL OR ? = ?)
+            {1: '1', 2: 2, 3: 2, 4: 2, 5: '1', 6: TRUE, 7: TRUE, 8: TRUE, 9: '1'}""".normalizeSpaces(),
+                    preparedStmt.toString().split(": ", limit = 2)[1].normalizeSpaces())
+        }
+
+        withPreparedStmt(queryOf("""SELECT * FROM dual t WHERE (:param1 IS NULL OR :param2 = :param2)""",
+                paramMap = mapOf("param2" to 2))
+        ) { preparedStmt ->
+            assertEquals("""SELECT * FROM dual t WHERE (? IS NULL OR ? = ?)
+            {1: NULL, 2: 2, 3: 2}""".normalizeSpaces(),
+                    preparedStmt.toString().split(": ", limit = 2)[1].normalizeSpaces())
+        }
+
+    }
+
+    fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            val preparedStmt = session.createPreparedStatement(query)
+
+            closure(preparedStmt)
         }
     }
 
