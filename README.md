@@ -122,6 +122,24 @@ val aliceQuery = queryOf("select id, name, created_at from members where name = 
 val alice: Member? = session.run(aliceQuery)
 ```
 
+#### Named query parameters
+
+Alternative syntax is supported to allow named parameters in all queries. 
+
+```kotlin
+queryOf("""select id, name, created_at 
+	from members 
+	where (:name is not null or name = :name)
+	  and (:age is not null or age = :age)""", 
+	mapOf("name" to "Alice"))
+```
+
+In the query above, the param `age` is not supplied on purpose.
+
+Performance-wise this syntax is slightly slower to prepare the statement and a tiny bit more memory-consuming, due to param mapping. Use it if readability is a priority.
+
+Importantly, this method is not based on "artificial" string replacement. In fact, the statement is prepared just as if it was the default syntax.
+
 #### Working with Large Dataset
 
 `#forEach` allows you to make some side-effect in iterations. This API is useful for handling large `ResultSet`.
