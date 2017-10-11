@@ -241,6 +241,17 @@ create table members (
         }
     }
 
+    @Test
+    fun nullParamsJdbcHandling() {
+        // this test could fail for PostgreSQL
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            val id = session.single(queryOf("select 1 from dual where ? is null", null)) { row -> row.int(1) }
+            assertEquals(1, id)
+        }
+    }
+
     fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
@@ -252,7 +263,7 @@ create table members (
     }
 
     fun String.extractQueryFromPreparedStmt(): String {
-        return this.split(": ", limit = 2)[1].normalizeSpaces()
+        return this.replace(Regex("^.*?: "), "").normalizeSpaces()
     }
 
 }

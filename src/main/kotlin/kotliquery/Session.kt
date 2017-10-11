@@ -8,6 +8,7 @@ import java.net.URL
 import java.sql.PreparedStatement
 import java.sql.Statement
 import java.sql.Timestamp
+import java.sql.Types
 import java.time.*
 import java.util.*
 
@@ -29,7 +30,7 @@ open class Session(
 
     private fun PreparedStatement.setParam(idx: Int, v: Any?) {
         if (v == null) {
-            this.setObject(idx, null)
+            this.setNull(idx, Types.VARCHAR)
         } else {
             when (v) {
                 is String -> this.setString(idx, v)
@@ -66,7 +67,7 @@ open class Session(
     }
 
     fun populateParams(query: Query, stmt: PreparedStatement): PreparedStatement {
-        if(query.replacementMap.isNotEmpty()) {
+        if (query.replacementMap.isNotEmpty()) {
             query.replacementMap.forEach { paramName, occurrences ->
                 occurrences.forEach {
                     stmt.setParam(it + 1, query.paramMap[paramName])
@@ -144,7 +145,7 @@ open class Session(
         }
     }
 
-    fun updateAndReturnGeneratedKey (query: Query): Long? {
+    fun updateAndReturnGeneratedKey(query: Query): Long? {
         warningForTransactionMode()
         return using(createPreparedStatement(query)) { stmt ->
             if (stmt.executeUpdate() > 0) {
@@ -163,6 +164,7 @@ open class Session(
     fun run(action: UpdateQueryAction): Int {
         return action.runWithSession(this)
     }
+
     fun run(action: UpdateAndReturnGeneratedKeyQueryAction): Long? {
         return action.runWithSession(this)
     }
@@ -183,7 +185,7 @@ open class Session(
             val result: A = operation.invoke(tx)
             connection.commit()
             return result
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             connection.rollback()
             throw e
         } finally {
