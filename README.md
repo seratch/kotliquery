@@ -140,6 +140,29 @@ Performance-wise this syntax is slightly slower to prepare the statement and a t
 
 Importantly, this method is not based on "artificial" string replacement. In fact, the statement is prepared just as if it was the default syntax.
 
+#### Typed params
+
+In the case, the parameter type has to be explicitly stated, there's a wrapper class - `Parameter` that will help provide explicit type information.
+
+```kotlin
+val param = Parameter(param, String::class.java)
+queryOf("""select id, name 
+    from members 
+    where ? is null or ? = name""", 
+    param, param)
+``` 
+
+or also with the helper function `param`
+
+```kotlin
+queryOf("""select id, name 
+    from members 
+    where ? is null or ? = name""", 
+    null.param<String>(), null.param<String>())
+```
+
+This can be useful in situations similar to one described [here](https://www.postgresql.org/message-id/6ekbd7dm4d6su5b9i4hsf92ibv4j76n51f@4ax.com).
+
 #### Working with Large Dataset
 
 `#forEach` allows you to make some side-effect in iterations. This API is useful for handling large `ResultSet`.

@@ -3,6 +3,7 @@ package kotliquery
 import org.junit.Test
 import java.sql.DriverManager
 import java.sql.PreparedStatement
+import java.sql.Timestamp
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
@@ -93,8 +94,6 @@ create table members (
             assertEquals(2, createdID2)
         }
     }
-
-
 
 
     @Test
@@ -241,6 +240,45 @@ create table members (
         }
     }
 
+    @Test
+    fun nullParamsJdbcHandling() {
+        // this test could fail for PostgreSQL
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            session.run(queryOf("drop table if exists members").asExecute)
+            session.run(queryOf("""
+create table members (
+  id serial not null primary key
+)
+        """).asExecute)
+            session.run(queryOf("insert into members(id) values (1)").asUpdate)
+
+            describe("typed param with value") {
+                assertEquals(1, session.single(queryOf("select 1 from members where ? = id", 1)) { row -> row.int(1) })
+            }
+
+            describe("typed null params") {
+                assertEquals(1, session.single(queryOf("select 1 from members where ? is null", null.param<String>())) { row -> row.int(1) })
+            }
+
+            describe("typed null comparison") {
+                assertEquals(1,
+                        session.single(queryOf("select 1 from members where ? is null or ? = now()",
+                                null.param<String>(),
+                                null.param<Timestamp>())) { row -> row.int(1) }
+                )
+            }
+
+            describe("select null") {
+                val param: String? = null
+                assertNull(session.single(queryOf("select ? from members", Parameter(param, String::class.java))) { row -> row.stringOrNull(1) })
+            }
+
+            session.run(queryOf("drop table if exists members").asExecute)
+        }
+    }
+
     fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
@@ -252,7 +290,7 @@ create table members (
     }
 
     fun String.extractQueryFromPreparedStmt(): String {
-        return this.split(": ", limit = 2)[1].normalizeSpaces()
+        return this.replace(Regex("^.*?: "), "").normalizeSpaces()
     }
 
 }

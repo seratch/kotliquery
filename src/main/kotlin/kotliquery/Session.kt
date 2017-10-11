@@ -27,6 +27,14 @@ open class Session(
 
     private val logger = LoggerFactory.getLogger(Session::class.java)
 
+    private inline fun <reified T> PreparedStatement.setTypedParam(idx: Int, param: Parameter<T>) {
+        if (param.value == null) {
+            this.setNull(idx, param.sqlType())
+        } else {
+            setParam(idx, param.value)
+        }
+    }
+
     private fun PreparedStatement.setParam(idx: Int, v: Any?) {
         if (v == null) {
             this.setObject(idx, null)
@@ -66,15 +74,15 @@ open class Session(
     }
 
     fun populateParams(query: Query, stmt: PreparedStatement): PreparedStatement {
-        if(query.replacementMap.isNotEmpty()) {
+        if (query.replacementMap.isNotEmpty()) {
             query.replacementMap.forEach { paramName, occurrences ->
                 occurrences.forEach {
-                    stmt.setParam(it + 1, query.paramMap[paramName])
+                    stmt.setTypedParam(it + 1, query.paramMap[paramName].param())
                 }
             }
         } else {
             query.params.forEachIndexed { index, value ->
-                stmt.setParam(index + 1, value)
+                stmt.setTypedParam(index + 1, value.param())
             }
         }
 
@@ -144,15 +152,14 @@ open class Session(
         }
     }
 
-    fun updateAndReturnGeneratedKey (query: Query): Long? {
+    fun updateAndReturnGeneratedKey(query: Query): Long? {
         warningForTransactionMode()
         return using(createPreparedStatement(query)) { stmt ->
             if (stmt.executeUpdate() > 0) {
                 val rs = stmt.getGeneratedKeys()
                 rs.next()
                 rs.getLong(1)
-            }
-            else null
+            } else null
         }
     }
 
@@ -163,6 +170,7 @@ open class Session(
     fun run(action: UpdateQueryAction): Int {
         return action.runWithSession(this)
     }
+
     fun run(action: UpdateAndReturnGeneratedKeyQueryAction): Long? {
         return action.runWithSession(this)
     }
@@ -183,7 +191,7 @@ open class Session(
             val result: A = operation.invoke(tx)
             connection.commit()
             return result
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             connection.rollback()
             throw e
         } finally {
