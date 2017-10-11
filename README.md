@@ -16,7 +16,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.1.3-2'
+    ext.kotlin_version = '1.1.51'
     repositories {
         mavenCentral()
     }
@@ -29,9 +29,9 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotliquery:1.1.4'
+    compile 'com.github.seratch:kotliquery:1.1.5'
     compile 'com.h2database:h2:1.4.196'
-    compile 'com.zaxxer:HikariCP:2.6.3'
+    compile 'com.zaxxer:HikariCP:2.7.2'
 }
 ```
 
