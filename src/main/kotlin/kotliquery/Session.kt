@@ -8,7 +8,6 @@ import java.net.URL
 import java.sql.PreparedStatement
 import java.sql.Statement
 import java.sql.Timestamp
-import java.sql.Types
 import java.time.*
 import java.util.*
 
@@ -28,9 +27,17 @@ open class Session(
 
     private val logger = LoggerFactory.getLogger(Session::class.java)
 
+    private inline fun <reified T> PreparedStatement.setTypedParam(idx: Int, param: Parameter<T>) {
+        if (param.value == null) {
+            this.setNull(idx, param.sqlType())
+        } else {
+            setParam(idx, param.value)
+        }
+    }
+
     private fun PreparedStatement.setParam(idx: Int, v: Any?) {
         if (v == null) {
-            this.setNull(idx, Types.VARCHAR)
+            this.setObject(idx, null)
         } else {
             when (v) {
                 is String -> this.setString(idx, v)
@@ -70,12 +77,12 @@ open class Session(
         if (query.replacementMap.isNotEmpty()) {
             query.replacementMap.forEach { paramName, occurrences ->
                 occurrences.forEach {
-                    stmt.setParam(it + 1, query.paramMap[paramName])
+                    stmt.setTypedParam(it + 1, query.paramMap[paramName].param())
                 }
             }
         } else {
             query.params.forEachIndexed { index, value ->
-                stmt.setParam(index + 1, value)
+                stmt.setTypedParam(index + 1, value.param())
             }
         }
 
@@ -152,8 +159,7 @@ open class Session(
                 val rs = stmt.getGeneratedKeys()
                 rs.next()
                 rs.getLong(1)
-            }
-            else null
+            } else null
         }
     }
 
