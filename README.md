@@ -16,7 +16,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.1.51'
+    ext.kotlin_version = '1.2.21'
     repositories {
         mavenCentral()
     }
@@ -29,9 +29,9 @@ repositories {
 }
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotliquery:1.1.5'
+    compile 'com.github.seratch:kotliquery:1.2.0'
     compile 'com.h2database:h2:1.4.196'
-    compile 'com.zaxxer:HikariCP:2.7.2'
+    compile 'com.zaxxer:HikariCP:2.7.7'
 }
 ```
 
@@ -46,8 +46,7 @@ KotliQuery is very easy-to-use. After reading this short documentation, you will
 ```kotlin
 import kotliquery.*
 
-val session = sessionOf("jdbc:h2:mem:hello", "user", "pass")
-```
+val session = sessionOf("jdbc:h2:mem:hello", "user", "pass") ```
 
 #### HikariCP
 
