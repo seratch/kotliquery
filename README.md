@@ -46,7 +46,8 @@ KotliQuery is very easy-to-use. After reading this short documentation, you will
 ```kotlin
 import kotliquery.*
 
-val session = sessionOf("jdbc:h2:mem:hello", "user", "pass") ```
+val session = sessionOf("jdbc:h2:mem:hello", "user", "pass") 
+```
 
 #### HikariCP
 
