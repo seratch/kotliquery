@@ -17,13 +17,13 @@ data class Query(
     val cleanStatement: String = replaceNamedParams(statement)
 
     private fun extractNamedParamsIndexed(stmt: String): Map<String, List<Int>> {
-        return Regex(""":\w+""").findAll(stmt).mapIndexed { index, group ->
+        return regex.findAll(stmt).mapIndexed { index, group ->
             Pair(group, index)
         }.groupBy({ it.first.value.substring(1) }, { it.second })
     }
 
     private fun replaceNamedParams(stmt: String): String {
-        return Regex(""":\w+""").replace(stmt, "?")
+        return regex.replace(stmt, "?")
     }
 
     fun <A> map(extractor: (Row) -> A?): ResultQueryActionBuilder<A> {
@@ -42,4 +42,7 @@ data class Query(
         ExecuteQueryAction(this)
     }
 
+    companion object {
+        private val regex = Regex(""":\w+""")
+    }
 }
