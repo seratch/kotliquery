@@ -1,5 +1,14 @@
 ## KotliQuery
 
+------------
+
+**This was forked from: https://github.com/seratch/kotliquery**
+So far I have not made any changes. I am using this library so I want a copy of the source. 
+It seems to work well - I'll send PRs if I fix an issue or extend it in any useful way.
+
+------------
+
+
 [![Build Status](https://travis-ci.org/seratch/kotliquery.svg)](https://travis-ci.org/seratch/kotliquery)
 
 A handy RDB client library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/). This library focuses on providing handy and Kotlin-ish API to issue a query and extract values from its JDBC ResultSet iterator.
