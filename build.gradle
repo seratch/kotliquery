@@ -15,7 +15,7 @@ targetCompatibility = 1.8
 
 buildscript {
     // http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.jetbrains.kotlin%22%20AND%20a%3A%22kotlin-gradle-plugin%22
-    ext.kotlin_version = '1.2.21'
+    ext.kotlin_version = '1.2.61'
     ext.kotlinVersion = ext.kotlin_version
     repositories {
         mavenCentral()
@@ -38,9 +38,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     compile 'org.slf4j:slf4j-api:1.7.25'
-    compile 'joda-time:joda-time:2.9.9'
-    provided 'com.zaxxer:HikariCP:2.7.7'
-    testCompile 'com.h2database:h2:1.4.196'
+    compile 'joda-time:joda-time:2.10'
+    provided 'com.zaxxer:HikariCP:3.2.0'
+    testCompile 'com.h2database:h2:1.4.197'
     testCompile 'junit:junit:4.12'
 }
 

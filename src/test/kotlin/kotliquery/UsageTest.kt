@@ -17,17 +17,17 @@ class UsageTest {
             val name: String?,
             val createdAt: ZonedDateTime)
 
-    val toMember: (Row) -> Member = { row ->
+    private val toMember: (Row) -> Member = { row ->
         Member(row.int("id"), row.stringOrNull("name"), row.zonedDateTime("created_at"))
     }
 
-    val insert = "insert into members (name,  created_at) values (?, ?)"
+    private val insert = "insert into members (name,  created_at) values (?, ?)"
 
-    fun borrowConnection(): java.sql.Connection {
-        return DriverManager.getConnection("jdbc:h2:mem:hello", "user", "pass")
+    private fun borrowConnection(): java.sql.Connection {
+        return DriverManager.getConnection("jdbc:h2:mem:usage;MODE=PostgreSQL", "user", "pass")
     }
 
-    val driverName = "org.h2.Driver"
+    private val driverName = "org.h2.Driver"
 
     @Test
     fun sessionUsage() {
@@ -173,7 +173,7 @@ create table members (
     }
 
     @Test
-    fun HikariCPUsage() {
+    fun testHikariCPUsage() {
         HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
 
         using(sessionOf(HikariCP.dataSource())) { session ->
@@ -279,7 +279,7 @@ create table members (
         }
     }
 
-    fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
+    private fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
 
@@ -289,7 +289,7 @@ create table members (
         }
     }
 
-    fun String.extractQueryFromPreparedStmt(): String {
+    private fun String.extractQueryFromPreparedStmt(): String {
         return this.replace(Regex("^.*?: "), "").normalizeSpaces()
     }
 
