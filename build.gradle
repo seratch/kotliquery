@@ -4,7 +4,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 group = 'com.github.seratch'
-version = '1.2.1'
+version = '1.2.2-SNAPSHOT'
 project.ext {
     artifactId = 'kotliquery'
 }
