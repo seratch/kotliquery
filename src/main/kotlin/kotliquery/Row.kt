@@ -241,7 +241,7 @@ data class Row(
     fun zonedDateTime(columnIndex: Int): ZonedDateTime {
         return zonedDateTimeOrNull(columnIndex)!!
     }
-    fun zonedDateTimeOrNull(columnIndex: Int) = nullable(
+    fun zonedDateTimeOrNull(columnIndex: Int): ZonedDateTime? = nullable(
             sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
                 ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
         } 
@@ -250,7 +250,7 @@ data class Row(
     fun zonedDateTime(columnLabel: String): ZonedDateTime {
         return zonedDateTimeOrNull(columnLabel)!!
     }
-    fun zonedDateTimeOrNull(columnLabel: String) = nullable(
+    fun zonedDateTimeOrNull(columnLabel: String): ZonedDateTime? = nullable(
             sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
                 ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
             } 
@@ -259,7 +259,7 @@ data class Row(
     fun offsetDateTime(columnIndex: Int): OffsetDateTime {
         return offsetDateTimeOrNull(columnIndex)!!
     }
-    fun offsetDateTimeOrNull(columnIndex: Int) = nullable(
+    fun offsetDateTimeOrNull(columnIndex: Int): OffsetDateTime? = nullable(
             sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
                 OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
             } 
@@ -268,7 +268,7 @@ data class Row(
     fun offsetDateTime(columnLabel: String): OffsetDateTime {
         return offsetDateTimeOrNull(columnLabel)!!
     }
-    fun offsetDateTimeOrNull(columnLabel: String) = nullable(
+    fun offsetDateTimeOrNull(columnLabel: String): OffsetDateTime? = nullable(
             sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
                 OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
             }
