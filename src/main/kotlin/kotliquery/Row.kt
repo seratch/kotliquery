@@ -241,30 +241,38 @@ data class Row(
     fun zonedDateTime(columnIndex: Int): ZonedDateTime {
         return zonedDateTimeOrNull(columnIndex)!!
     }
-    fun zonedDateTimeOrNull(columnIndex: Int): ZonedDateTime? {
-        return nullable(ZonedDateTime.ofInstant(sqlTimestampOrNull(columnIndex)?.toInstant(), ZoneId.systemDefault()))
-    }
+    fun zonedDateTimeOrNull(columnIndex: Int): ZonedDateTime? = nullable(
+            sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
+                ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
+        } 
+    )
 
     fun zonedDateTime(columnLabel: String): ZonedDateTime {
         return zonedDateTimeOrNull(columnLabel)!!
     }
-    fun zonedDateTimeOrNull(columnLabel: String): ZonedDateTime? {
-        return nullable(ZonedDateTime.ofInstant(sqlTimestampOrNull(columnLabel)?.toInstant(), ZoneId.systemDefault()))
-    }
+    fun zonedDateTimeOrNull(columnLabel: String): ZonedDateTime? = nullable(
+            sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
+                ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
+            } 
+    )
 
     fun offsetDateTime(columnIndex: Int): OffsetDateTime {
         return offsetDateTimeOrNull(columnIndex)!!
     }
-    fun offsetDateTimeOrNull(columnIndex: Int): OffsetDateTime? {
-        return nullable(OffsetDateTime.ofInstant(sqlTimestampOrNull(columnIndex)?.toInstant(), ZoneId.systemDefault()))
-    }
+    fun offsetDateTimeOrNull(columnIndex: Int): OffsetDateTime? = nullable(
+            sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
+                OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
+            } 
+    )
 
     fun offsetDateTime(columnLabel: String): OffsetDateTime {
         return offsetDateTimeOrNull(columnLabel)!!
     }
-    fun offsetDateTimeOrNull(columnLabel: String): OffsetDateTime? {
-        return nullable(OffsetDateTime.ofInstant(sqlTimestampOrNull(columnLabel)?.toInstant(), ZoneId.systemDefault()))
-    }
+    fun offsetDateTimeOrNull(columnLabel: String): OffsetDateTime? = nullable(
+            sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
+                OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
+            }
+    )
 
     fun instant(columnIndex: Int): Instant {
         return instantOrNull(columnIndex)!!
