@@ -17,7 +17,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.2.61'
+    ext.kotlin_version = '1.2.71'
     repositories {
         mavenCentral()
     }
