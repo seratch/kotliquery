@@ -43,6 +43,6 @@ data class Query(
     }
 
     companion object {
-        private val regex = Regex(""":\w+""")
+        private val regex = Regex("""(?<!:):(?!:)\w+""")
     }
 }
