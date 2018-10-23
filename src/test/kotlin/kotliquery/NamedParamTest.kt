@@ -2,6 +2,7 @@ package kotliquery
 
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class NamedParamTest {
 
@@ -44,6 +45,14 @@ class NamedParamTest {
                         "param2" to listOf(1, 2),
                         "param3" to listOf(3, 4)
                 ), query.replacementMap)
+            }
+        }
+
+        describe("do not extract anything") {
+            withQueries(
+                """SELECT * FROM table t WHERE param1 = '2018-01-01'::DATE"""
+            ) { query ->
+                assertTrue(query.replacementMap.isEmpty())
             }
         }
     }
