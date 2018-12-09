@@ -115,7 +115,7 @@ open class Session(
         }
     }
 
-    private fun rowsBatched(statement: String, params: Collection<Collection<Any>>, namedParams: Collection<Map<String, Any?>>): List<Int> {
+    private fun rowsBatched(statement: String, params: Collection<Collection<Any?>>, namedParams: Collection<Map<String, Any?>>): List<Int> {
         return using(connection.underlying.prepareStatement(Query(statement).cleanStatement)) { stmt ->
 
             if (namedParams.isNotEmpty()) {
@@ -157,7 +157,7 @@ open class Session(
         return rows(query, extractor).toList()
     }
 
-    fun batchManyStatements(statements: List<String>): List<Int> {
+    fun batchManyStatements(statements: Collection<String>): List<Int> {
         warningForTransactionMode()
         return using(connection.underlying.createStatement()) { st ->
             statements.forEach{
@@ -172,7 +172,7 @@ open class Session(
         return rowsBatched(statement, emptyList(), params)
     }
 
-    fun batchPreparedStatement(statement: String, params: Collection<Collection<Any>>): List<Int> {
+    fun batchPreparedStatement(statement: String, params: Collection<Collection<Any?>>): List<Int> {
         warningForTransactionMode()
         return rowsBatched(statement, params, emptyList())
     }
