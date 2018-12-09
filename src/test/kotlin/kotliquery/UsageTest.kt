@@ -4,6 +4,7 @@ import org.junit.Test
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.Timestamp
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
@@ -309,13 +310,17 @@ create table members (
             session.execute(queryOf("drop table members if exists"))
             session.execute(queryOf(createTableStmt))
 
+            val now = Instant.now()
             val res = session.batchPreparedStatement(
-                    "insert into members(id, created_at) values (?, now())",
-                    listOf(listOf(1), listOf(2), listOf(3))
+                    "insert into members(id, created_at) values (?, ?)",
+                    listOf(listOf(1, now), listOf(2, now), listOf(3, now))
             )
 
             assertEquals(listOf(1, 1, 1), res)
-            assertEquals(listOf(1, 2, 3), session.list(queryOf("select id from members")) { row -> row.int("id") })
+
+            val nowAtEpoch = now.epochSecond
+            assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
+                    session.list(queryOf("select id, created_at from members")) { row -> Pair(row.int("id"), row.instant("created_At").epochSecond) })
         }
     }
 
@@ -327,13 +332,17 @@ create table members (
             session.execute(queryOf("drop table members if exists"))
             session.execute(queryOf(createTableStmt))
 
+            val now = Instant.now()
             val res = session.batchPreparedNamedStatement(
-                    "insert into members(id, created_at) values (:id, now())",
-                    listOf(mapOf("id" to 1), mapOf("id" to 2), mapOf("id" to 3))
+                    "insert into members(id, created_at) values (:id, :when)",
+                    listOf(mapOf("id" to 1, "when" to now), mapOf("id" to 2, "when" to now), mapOf("id" to 3, "when" to now))
             )
 
             assertEquals(listOf(1, 1, 1), res)
-            assertEquals(listOf(1, 2, 3), session.list(queryOf("select id from members")) { row -> row.int("id") })
+            val nowAtEpoch = now.epochSecond
+            assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
+                    session.list(queryOf("select id, created_at from members")) { row -> Pair(row.int("id"), row.instant("created_At").epochSecond) })
+
         }
     }
 
