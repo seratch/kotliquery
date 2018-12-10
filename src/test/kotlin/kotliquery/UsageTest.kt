@@ -296,9 +296,7 @@ create table members (
                     mapOf("randomNumbers" to session.createArrayOf("integer", listOf(1, 2, 3)))
             ).asUpdate)
 
-            val readNumbers = session.single(queryOf("select random_numbers from members where id = 1")) { row ->
-                (row.sqlArray(1).array as Array<Any>).map { it as Int }
-            }
+            val readNumbers = session.single(queryOf("select random_numbers from members where id = 1")) { it.array<Int>(1) }
             assertEquals(listOf(1, 2, 3), readNumbers?.toList())
 
             session.run(queryOf("drop table if exists members").asExecute)
