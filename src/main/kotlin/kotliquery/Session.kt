@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import java.io.InputStream
 import java.math.BigDecimal
 import java.net.URL
+import java.sql.Array
 import java.sql.PreparedStatement
 import java.sql.Statement
 import java.sql.Timestamp
@@ -72,6 +73,8 @@ open class Session(
             }
         }
     }
+
+    fun createArrayOf(typeName: String, items: Collection<Any>): Array = connection.underlying.createArrayOf(typeName, items.toTypedArray())
 
     fun populateParams(query: Query, stmt: PreparedStatement): PreparedStatement {
         if (query.replacementMap.isNotEmpty()) {
