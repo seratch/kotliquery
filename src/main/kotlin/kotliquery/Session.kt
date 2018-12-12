@@ -115,6 +115,31 @@ open class Session(
         }
     }
 
+    private fun rowsBatched(statement: String, params: Collection<Collection<Any?>>, namedParams: Collection<Map<String, Any?>>): List<Int> {
+        return using(connection.underlying.prepareStatement(Query(statement).cleanStatement)) { stmt ->
+
+            if (namedParams.isNotEmpty()) {
+                val extracted = Query.extractNamedParamsIndexed(statement)
+                namedParams.forEach { paramRow ->
+                    extracted.forEach { paramName, occurrences ->
+                        occurrences.forEach {
+                            stmt.setTypedParam(it + 1, paramRow[paramName].param())
+                        }
+                    }
+                    stmt.addBatch()
+                }
+            } else {
+                params.forEach { paramsRow ->
+                    paramsRow.forEachIndexed { idx, value ->
+                        stmt.setTypedParam(idx + 1, value.param())
+                    }
+                    stmt.addBatch()
+                }
+            }
+            stmt.executeBatch().toList()
+        }
+    }
+
     private fun warningForTransactionMode(): Unit {
         if (transactional) {
             logger.warn("Use TransactionalSession instead. The `tx` of `session.transaction { tx -> ... }`")
@@ -130,6 +155,26 @@ open class Session(
     fun <A> list(query: Query, extractor: (Row) -> A?): List<A> {
         warningForTransactionMode()
         return rows(query, extractor).toList()
+    }
+
+    fun batchRawStatements(statements: Collection<String>): List<Int> {
+        warningForTransactionMode()
+        return using(connection.underlying.createStatement()) { st ->
+            statements.forEach {
+                st.addBatch(it)
+            }
+            st.executeBatch().toList()
+        }
+    }
+
+    fun batchPreparedNamedStatement(statement: String, params: Collection<Map<String, Any?>>): List<Int> {
+        warningForTransactionMode()
+        return rowsBatched(statement, emptyList(), params)
+    }
+
+    fun batchPreparedStatement(statement: String, params: Collection<Collection<Any?>>): List<Int> {
+        warningForTransactionMode()
+        return rowsBatched(statement, params, emptyList())
     }
 
     fun forEach(query: Query, operator: (Row) -> Unit): Unit {

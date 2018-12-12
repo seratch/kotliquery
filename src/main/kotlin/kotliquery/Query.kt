@@ -16,12 +16,6 @@ data class Query(
     val replacementMap: Map<String, List<Int>> = extractNamedParamsIndexed(statement)
     val cleanStatement: String = replaceNamedParams(statement)
 
-    private fun extractNamedParamsIndexed(stmt: String): Map<String, List<Int>> {
-        return regex.findAll(stmt).mapIndexed { index, group ->
-            Pair(group, index)
-        }.groupBy({ it.first.value.substring(1) }, { it.second })
-    }
-
     private fun replaceNamedParams(stmt: String): String {
         return regex.replace(stmt, "?")
     }
@@ -44,5 +38,12 @@ data class Query(
 
     companion object {
         private val regex = Regex("""(?<!:):(?!:)\w+""")
+
+        internal fun extractNamedParamsIndexed(stmt: String): Map<String, List<Int>> {
+            return regex.findAll(stmt).mapIndexed { index, group ->
+                Pair(group, index)
+            }.groupBy({ it.first.value.substring(1) }, { it.second })
+        }
+
     }
 }

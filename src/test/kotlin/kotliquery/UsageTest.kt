@@ -4,6 +4,7 @@ import org.junit.Test
 import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.Timestamp
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
@@ -23,6 +24,15 @@ class UsageTest {
 
     private val insert = "insert into members (name,  created_at) values (?, ?)"
 
+    private val createTableStmt = """
+create table members (
+  id serial not null primary key,
+  name varchar(64),
+  created_at timestamp not null
+)
+        """
+
+
     private fun borrowConnection(): java.sql.Connection {
         return DriverManager.getConnection("jdbc:h2:mem:usage;MODE=PostgreSQL", "user", "pass")
     }
@@ -36,13 +46,7 @@ class UsageTest {
             val session = Session(Connection(conn, driverName))
 
             session.execute(queryOf("drop table members if exists"))
-            session.execute(queryOf("""
-create table members (
-  id serial not null primary key,
-  name varchar(64),
-  created_at timestamp not null
-)
-        """))
+            session.execute(queryOf(createTableStmt))
             session.update(queryOf(insert, "Alice", Date()))
             session.update(queryOf(insert, "Bob", Date()))
 
@@ -77,13 +81,7 @@ create table members (
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
             session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf("""
-create table members (
-  id serial not null primary key,
-  name varchar(64),
-  created_at timestamp not null
-)
-        """).asExecute)
+            session.run(queryOf(createTableStmt).asExecute)
 
             // session usage example
             val createdID = session.run(queryOf(insert, "Fred", Date()).asUpdateAndReturnGeneratedKey)
@@ -103,13 +101,7 @@ create table members (
             val session = Session(Connection(conn, driverName))
 
             session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf("""
-create table members (
-  id serial not null primary key,
-  name varchar(64),
-  created_at timestamp not null
-)
-        """).asExecute)
+            session.run(queryOf(createTableStmt).asExecute)
 
             session.run(queryOf(insert, "Alice", Date()).asUpdate)
             session.run(queryOf(insert, "Bob", Date()).asUpdate)
@@ -148,13 +140,7 @@ create table members (
             val session = Session(Connection(conn, driverName))
 
             session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf("""
-create table members (
-  id serial not null primary key,
-  name varchar(64),
-  created_at timestamp not null
-)
-        """).asExecute)
+            session.run(queryOf(createTableStmt).asExecute)
 
             session.run(queryOf(insert, "Alice", Date()).asUpdate)
             session.transaction { tx -> tx.run(queryOf(insert, "Bob", Date()).asUpdate) }
@@ -179,13 +165,7 @@ create table members (
         using(sessionOf(HikariCP.dataSource())) { session ->
 
             session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf("""
-create table members (
-  id serial not null primary key,
-  name varchar(64),
-  created_at timestamp not null
-)
-        """).asExecute)
+            session.run(queryOf(createTableStmt).asExecute)
 
             listOf("Alice", "Bob").forEach { name ->
                 session.update(queryOf(insert, name, Date()))
@@ -300,6 +280,69 @@ create table members (
             assertEquals(listOf(1, 2, 3), readNumbers?.toList())
 
             session.run(queryOf("drop table if exists members").asExecute)
+        }
+    }
+
+    @Test
+    fun simpleBatchStatements(){
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            session.execute(queryOf("drop table members if exists"))
+            session.execute(queryOf(createTableStmt))
+
+            val res = session.batchRawStatements(listOf(
+                    "insert into members(id, created_at) values (1, now())",
+                    "insert into members(id, created_at) values (2, now())",
+                    "insert into members(id, created_at) values (3, now())"
+            ))
+
+            assertEquals(listOf(1, 1, 1), res)
+            assertEquals(listOf(1, 2, 3), session.list(queryOf("select id from members")) { row -> row.int("id") })
+        }
+    }
+
+    @Test
+    fun batchPreparedStatemet(){
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            session.execute(queryOf("drop table members if exists"))
+            session.execute(queryOf(createTableStmt))
+
+            val now = Instant.now()
+            val res = session.batchPreparedStatement(
+                    "insert into members(id, created_at) values (?, ?)",
+                    listOf(listOf(1, now), listOf(2, now), listOf(3, now))
+            )
+
+            assertEquals(listOf(1, 1, 1), res)
+
+            val nowAtEpoch = now.epochSecond
+            assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
+                    session.list(queryOf("select id, created_at from members")) { row -> Pair(row.int("id"), row.instant("created_At").epochSecond) })
+        }
+    }
+
+    @Test
+    fun batchPreparedNamedStatement(){
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            session.execute(queryOf("drop table members if exists"))
+            session.execute(queryOf(createTableStmt))
+
+            val now = Instant.now()
+            val res = session.batchPreparedNamedStatement(
+                    "insert into members(id, created_at) values (:id, :when)",
+                    listOf(mapOf("id" to 1, "when" to now), mapOf("id" to 2, "when" to now), mapOf("id" to 3, "when" to now))
+            )
+
+            assertEquals(listOf(1, 1, 1), res)
+            val nowAtEpoch = now.epochSecond
+            assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
+                    session.list(queryOf("select id, created_at from members")) { row -> Pair(row.int("id"), row.instant("created_At").epochSecond) })
+
         }
     }
 
