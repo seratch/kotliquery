@@ -157,16 +157,6 @@ open class Session(
         return rows(query, extractor).toList()
     }
 
-    fun batchRawStatements(statements: Collection<String>): List<Int> {
-        warningForTransactionMode()
-        return using(connection.underlying.createStatement()) { st ->
-            statements.forEach {
-                st.addBatch(it)
-            }
-            st.executeBatch().toList()
-        }
-    }
-
     fun batchPreparedNamedStatement(statement: String, params: Collection<Map<String, Any?>>): List<Int> {
         warningForTransactionMode()
         return rowsBatched(statement, emptyList(), params)
