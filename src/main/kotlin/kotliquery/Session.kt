@@ -157,10 +157,10 @@ open class Session(
         return rows(query, extractor).toList()
     }
 
-    fun batchManyStatements(statements: Collection<String>): List<Int> {
+    fun batchRawStatements(statements: Collection<String>): List<Int> {
         warningForTransactionMode()
         return using(connection.underlying.createStatement()) { st ->
-            statements.forEach{
+            statements.forEach {
                 st.addBatch(it)
             }
             st.executeBatch().toList()

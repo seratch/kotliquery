@@ -291,7 +291,7 @@ create table members (
             session.execute(queryOf("drop table members if exists"))
             session.execute(queryOf(createTableStmt))
 
-            val res = session.batchManyStatements(listOf(
+            val res = session.batchRawStatements(listOf(
                     "insert into members(id, created_at) values (1, now())",
                     "insert into members(id, created_at) values (2, now())",
                     "insert into members(id, created_at) values (3, now())"
