@@ -284,26 +284,7 @@ create table members (
     }
 
     @Test
-    fun simpleBatchStatements(){
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
-
-            session.execute(queryOf("drop table members if exists"))
-            session.execute(queryOf(createTableStmt))
-
-            val res = session.batchRawStatements(listOf(
-                    "insert into members(id, created_at) values (1, now())",
-                    "insert into members(id, created_at) values (2, now())",
-                    "insert into members(id, created_at) values (3, now())"
-            ))
-
-            assertEquals(listOf(1, 1, 1), res)
-            assertEquals(listOf(1, 2, 3), session.list(queryOf("select id from members")) { row -> row.int("id") })
-        }
-    }
-
-    @Test
-    fun batchPreparedStatemet(){
+    fun batchPreparedStatement(){
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
 
