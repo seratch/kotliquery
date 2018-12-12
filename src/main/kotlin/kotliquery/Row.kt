@@ -478,6 +478,20 @@ data class Row(
         return nullable(underlying.getNClob(columnLabel))
     }
 
+    inline fun <reified T> array(columnIndex: Int): Array<T> = arrayOrNull(columnIndex)!!
+
+    inline fun <reified T> arrayOrNull(columnIndex: Int): Array<T>? {
+        val result = sqlArrayOrNull(columnIndex)?.array as kotlin.Array<Any>?
+        return result?.map { it as T }?.toTypedArray()
+    }
+
+    inline fun <reified T> array(columnLabel: String): Array<T> = arrayOrNull(columnLabel)!!
+
+    inline fun <reified T> arrayOrNull(columnLabel: String): Array<T>? {
+        val result = sqlArrayOrNull(columnLabel)?.array as kotlin.Array<Any>?
+        return result?.map { it as T }?.toTypedArray()
+    }
+
     fun sqlArray(columnIndex: Int): java.sql.Array {
         return sqlArrayOrNull(columnIndex)!!
     }

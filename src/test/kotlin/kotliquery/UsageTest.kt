@@ -279,6 +279,30 @@ create table members (
         }
     }
 
+    @Test
+    fun createAnArray() {
+        using(borrowConnection()) { conn ->
+            val session = Session(Connection(conn, driverName))
+
+            session.run(queryOf("drop table if exists members").asExecute)
+            session.run(queryOf("""
+create table members (
+  id serial not null primary key,
+  random_numbers array
+)
+        """).asExecute)
+            session.run(queryOf(
+                    "insert into members(id, random_numbers) values (1, :randomNumbers)",
+                    mapOf("randomNumbers" to session.createArrayOf("integer", listOf(1, 2, 3)))
+            ).asUpdate)
+
+            val readNumbers = session.single(queryOf("select random_numbers from members where id = 1")) { it.array<Int>(1) }
+            assertEquals(listOf(1, 2, 3), readNumbers?.toList())
+
+            session.run(queryOf("drop table if exists members").asExecute)
+        }
+    }
+
     private fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
