@@ -48,6 +48,14 @@ class NamedParamTest {
             }
         }
 
+        describe("do not extract from timestamp minutes and seconds") {
+            withQueries(
+                    """SELECT * FROM table t WHERE param1 = '2018-01-01 00:00:00'"""
+            ) { query ->
+                assertTrue(query.replacementMap.isEmpty())
+            }
+        }
+
         describe("do not extract anything") {
             withQueries(
                 """SELECT * FROM table t WHERE param1 = '2018-01-01'::DATE"""

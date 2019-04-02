@@ -37,7 +37,7 @@ data class Query(
     }
 
     companion object {
-        private val regex = Regex("""(?<!:):(?!:)\w+""")
+        private val regex = Regex("""(?<!:):(?!:)[a-zA-Z]\w+""")
 
         internal fun extractNamedParamsIndexed(stmt: String): Map<String, List<Int>> {
             return regex.findAll(stmt).mapIndexed { index, group ->
