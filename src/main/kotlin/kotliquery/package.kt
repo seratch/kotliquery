@@ -26,6 +26,18 @@ fun sessionOf(dataSource: DataSource, returnGeneratedKey: Boolean = false): Sess
     return Session(Connection(dataSource.connection), returnGeneratedKey)
 }
 
+fun <T> sessionOf(dataSource: DataSource, returnGeneratedKey: Boolean = false, operation: (Session) -> T): T {
+    return using(sessionOf(dataSource, returnGeneratedKey)) {
+        operation(it)
+    }
+}
+
+fun <T> transactionOf(dataSource: DataSource, returnGeneratedKey: Boolean = false, operation: (TransactionalSession) -> T): T {
+    return using(sessionOf(dataSource, returnGeneratedKey)) {
+        it.transaction(operation)
+    }
+}
+
 fun <A : AutoCloseable, R> using(closeable: A?, f: (A) -> R): R {
     return LoanPattern.using(closeable, f)
 }

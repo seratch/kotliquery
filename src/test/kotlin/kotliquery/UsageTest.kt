@@ -162,7 +162,7 @@ create table members (
     fun testHikariCPUsage() {
         HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
 
-        using(sessionOf(HikariCP.dataSource())) { session ->
+        sessionOf(HikariCP.dataSource()) { session ->
 
             session.run(queryOf("drop table members if exists").asExecute)
             session.run(queryOf(createTableStmt).asExecute)
