@@ -53,6 +53,11 @@ create table members (
             val ids: List<Int> = session.list(queryOf("select id from members")) { row -> row.int("id") }
             assertEquals(2, ids.size)
 
+            val idMapper = session.run(queryOf("select ID, NAME from members").mapper().asList)
+            assertEquals(2, idMapper.size)
+            assertEquals("Alice", idMapper[0]["NAME"])
+            assertEquals("Bob", idMapper[1]["NAME"])
+
             val members: List<Member> = session.list(queryOf("select id, name, created_at from members"), toMember)
             assertEquals(2, members.size)
 
