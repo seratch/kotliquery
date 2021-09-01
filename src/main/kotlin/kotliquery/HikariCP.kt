@@ -22,7 +22,7 @@ object HikariCP {
         config.addDataSourceProperty("prepStmtCacheSize", "250")
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
         val existing: HikariDataSource? = pools[name]
-        if (existing != null && existing.isClosed) {
+        if (existing != null && !existing.isClosed) {
             existing.close()
         }
         val ds = HikariDataSource(config)
