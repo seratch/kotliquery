@@ -7,6 +7,7 @@ import java.math.BigDecimal
 import java.net.URL
 import java.sql.Array
 import java.sql.PreparedStatement
+import java.sql.SQLException
 import java.sql.Statement
 import java.sql.Timestamp
 import java.time.*
@@ -149,7 +150,11 @@ open class Session(
     fun <A> single(query: Query, extractor: (Row) -> A?): A? {
         warningForTransactionMode()
         val rs = rows(query, extractor)
-        return if (rs.size > 0) rs.first() else null
+        return when(rs.size) {
+            1 -> rs.first()
+            0 -> null
+            else -> throw SQLException("Expected one row but received `${rs.size}`.")
+        }
     }
 
     fun <A> list(query: Query, extractor: (Row) -> A?): List<A> {
