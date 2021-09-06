@@ -1,6 +1,6 @@
 ## KotliQuery
 
-[![Build Status](https://travis-ci.org/seratch/kotliquery.svg)](https://travis-ci.org/seratch/kotliquery)
+[![CI Builds](https://github.com/seratch/kotliquery/actions/workflows/ci-builds.yml/badge.svg)](https://github.com/seratch/kotliquery/actions/workflows/ci-builds.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.seratch/kotliquery.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.seratch%22%20AND%20a:%22kotliquery%22)
 
 KotliQuery is a handy RDB client library for Kotlin developers! The design is highly inspired by [ScalikeJDBC](http://scalikejdbc.org/), which is a proven database library in Scala. The priorities in this project are:
