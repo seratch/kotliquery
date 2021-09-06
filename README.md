@@ -36,17 +36,17 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.github.seratch:kotliquery:1.6.0'
     implementation 'com.h2database:h2:1.4.200'
-    implementation 'com.zaxxer:HikariCP:5.0.0'
+    implementation 'com.zaxxer:HikariCP:4.0.3'
 }
 ```
 
 ### Example
 
-KotliQuery is very easy-to-use. After reading this short documentation, you will have learnt enough.
+KotliQuery is more easy-to-use than you expect. Just after reading this short section, you will have learnt enough.
 
 #### Creating DB Session
 
-`Session` object, thin wrapper of `java.sql.Connection` instance, runs queries.
+First thing you do is to create a `Session` object, which is a thin wrapper of `java.sql.Connection` instance. With this object, you can run queries using an established database connection.
 
 ```kotlin
 import kotliquery.*
@@ -56,9 +56,7 @@ val session = sessionOf("jdbc:h2:mem:hello", "user", "pass")
 
 #### HikariCP
 
-Using connection pool would be better for serious programming.
-
-[HikariCP](https://github.com/brettwooldridge/HikariCP) is blazingly fast and so handy.
+For production-grade applications, utilizing a connection pool library for better connection management is generally recommended. KotliQuery provides an out-of-the-box solution that leverages [HikariCP](https://github.com/brettwooldridge/HikariCP), which is a widely accepted connection pool library.
 
 ```kotlin
 HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
@@ -69,6 +67,8 @@ using(sessionOf(HikariCP.dataSource())) { session ->
 ```
 
 #### DDL Execution
+
+You acn use a session for executing both DDLs and DMLs. The `asExecute` method if a query object sets the underlying JDBC Statement method to [`execute`](https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#execute-java.lang.String-).
 
 ```kotlin
 session.run(queryOf("""
@@ -82,6 +82,8 @@ session.run(queryOf("""
 
 #### Update Operations
 
+For insert/update/delete statements, using `asUpdate` is appropriate. This method sets the underlying JDBC Statement method to [executeUpdate](https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#executeUpdate-java.lang.String-). 
+
 ```kotlin
 val insertQuery: String = "insert into members (name,  created_at) values (?, ?)"
 
@@ -91,18 +93,18 @@ session.run(queryOf(insertQuery, "Bob", Date()).asUpdate)
 
 #### Select Queries
 
-Prepare select query execution in the following steps:
+Now you've got a database table named `members`! Let's run your first SQL statement with this library. To run a query, your code follows the three steps as below:
 
-- Create `Query` object by using `queryOf` factory
-- Bind extractor function (`(Row) -> A`) to the `Query` object via `#map` method
-- Specify response type (`asList`/`asSingle`) at the end
+- Create a `Query` object by using `queryOf` factory method
+- Attach an extractor function (`(Row) -> A`) to the `Query` object via `#map` method
+- Specify the response type (`asList`/`asSingle`) for the result
 
 ```kotlin
 val allIdsQuery = queryOf("select id from members").map { row -> row.int("id") }.asList
 val ids: List<Int> = session.run(allIdsQuery)
 ```
 
-Extractor function can return any type of result from `ResultSet`.
+An extractor function can return any type of result from underlying JDBC `ResultSet` iterator.
 
 ```kotlin
 data class Member(
@@ -129,25 +131,21 @@ val alice: Member? = session.run(aliceQuery)
 
 #### Named query parameters
 
-Alternative syntax is supported to allow named parameters in all queries. 
+An alternative way to bind parameters is to use named parameters that start with `:` in the statement string. Note that, with this feature, KotliQuery still uses a prepared statement internally and your query execution is safe from SQL injection. The parameter parts like `:name` and `:age` in the following example query won't be just replaced as string values.
 
 ```kotlin
 queryOf("""select id, name, created_at 
 	from members 
 	where (:name is not null or name = :name)
 	  and (:age is not null or age = :age)""", 
-	mapOf("name" to "Alice"))
+	mapOf("name" to "Alice", "age" to 20))
 ```
 
-In the query above, the param `age` is not supplied on purpose.
-
-Performance-wise this syntax is slightly slower to prepare the statement and a tiny bit more memory-consuming, due to param mapping. Use it if readability is a priority.
-
-Importantly, this method is not based on "artificial" string replacement. In fact, the statement is prepared just as if it was the default syntax.
+Performance-wise, the named parameter syntax can be slightly slower for parsing the statement plus a tiny bit more memory-consuming. But for most use case, the overhead should be ignorable. If you would like to make your SQL statements more readable and/or if your query has to repeat the same parameter in a query, using named query parameters should improve your productivity and the maintainability of the query a lot.
 
 #### Typed params
 
-In the case, the parameter type has to be explicitly stated, there's a wrapper class - `Parameter` that will help provide explicit type information.
+You can specify the Java type for each parameter in the following way. Passing the class `Parameter` helps KotliQuery properly determine the type to bind for each parameter in queries.
 
 ```kotlin
 val param = Parameter(param, String::class.java)
@@ -157,7 +155,7 @@ queryOf("""select id, name
     param, param)
 ``` 
 
-or also with the helper function `param`
+As a handier way, you can use the following helper method.
 
 ```kotlin
 queryOf("""select id, name 
@@ -166,11 +164,11 @@ queryOf("""select id, name
     null.param<String>(), null.param<String>())
 ```
 
-This can be useful in situations similar to one described [here](https://www.postgresql.org/message-id/6ekbd7dm4d6su5b9i4hsf92ibv4j76n51f@4ax.com).
+This functionality is particularly useful in the situations like [the ones dsecribed here](https://www.postgresql.org/message-id/6ekbd7dm4d6su5b9i4hsf92ibv4j76n51f@4ax.com).
 
 #### Working with Large Dataset
 
-`#forEach` allows you to make some side-effect in iterations. This API is useful for handling large `ResultSet`.
+The `#forEach` allows you to work with each row with less memory consumption. With this way, your application code does not need to load all the query result data in memory at once. This feature is greatly useful when you load a large number of rows from a database table by a single query.
 
 ```kotlin
 session.forEach(queryOf("select id from members")) { row ->
@@ -180,7 +178,7 @@ session.forEach(queryOf("select id from members")) { row ->
 
 #### Transaction
 
-`Session` object provides transaction block.
+Running queries in a transaction is of course supported! The `Session` object provides a way to start a transaction in a certain code block. As this library is a bit opinionated, transactions are available only with a code block. We intentionally do not support `begin` / `commit` methods.
 
 ```kotlin
 session.transaction { tx ->
