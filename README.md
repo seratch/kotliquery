@@ -131,10 +131,25 @@ val allMembersQuery = queryOf("select id, name, created_at from members").map(to
 val members: List<Member> = session.run(allMembersQuery)
 ```
 
+If you are sure that a query can return zero or one row, `asSingle` returns an optional single value as below:
+
 ```kotlin
 val aliceQuery = queryOf("select id, name, created_at from members where name = ?", "Alice").map(toMember).asSingle
 val alice: Member? = session.run(aliceQuery)
 ```
+
+Technically, it's also possible to use `asSingle` along with an SQL statement returning multiple rows. With the default setting, the result data extraction returns only the first row in the results and skips the rest. In other words, KotliQuery silently ignores the inefficiency and the potential misbehavior. If you prefer detection by an error in this scenario, you can pass `strict` flag to `Session` initializer. With strict set to true, the query execution throws an exception if it detects multiple rows for `asSingle`.
+
+```kotlin
+// Session object constructor
+val session = Session(HikariCP.dataSource(), strict = true)
+
+// an auto-closing code block for session
+using(sessionOf(HikariCP.dataSource(), strict = true)) { session ->
+
+}
+```
+
 
 #### Named query parameters
 
