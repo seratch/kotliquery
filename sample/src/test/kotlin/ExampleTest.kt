@@ -1,4 +1,5 @@
-import kotliquery.*
+import kotliquery.Row
+import kotliquery.queryOf
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals

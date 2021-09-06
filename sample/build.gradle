@@ -21,12 +21,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation 'ch.qos.logback:logback-classic:1.2.5'
 }
-idea {
-    module {
-        inheritOutputDirs = false
-        outputDir = file('build/classes/main/')
-    }
-}
 test {
     testLogging {
         events "PASSED", "FAILED", "SKIPPED"
