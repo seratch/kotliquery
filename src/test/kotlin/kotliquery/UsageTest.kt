@@ -3,19 +3,21 @@ package kotliquery
 import org.junit.Test
 import java.sql.DriverManager
 import java.sql.PreparedStatement
+import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class UsageTest {
 
     data class Member(
-            val id: Int,
-            val name: String?,
+        val id: Int,
+        val name: String?,
             val createdAt: ZonedDateTime)
 
     private val toMember: (Row) -> Member = { row ->
@@ -183,7 +185,7 @@ create table members (
             AND (:param2 IS NULL OR :param1 = :param3)
             AND (:param3 IS NULL OR :param3 = :param1)""",
                 paramMap = mapOf("param1" to "1",
-                        "param2" to 2,
+                    "param2" to 2,
                         "param3" to true))
         ) { preparedStmt ->
             assertEquals("""SELECT * FROM dual t
@@ -245,7 +247,7 @@ create table members (
             describe("typed null comparison") {
                 assertEquals(1,
                         session.single(queryOf("select 1 from members where ? is null or ? = now()",
-                                null.param<String>(),
+                            null.param<String>(),
                                 null.param<Timestamp>())) { row -> row.int(1) }
                 )
             }
@@ -293,8 +295,8 @@ create table members (
 
             val now = Instant.now()
             val res = session.batchPreparedStatement(
-                    "insert into members(id, created_at) values (?, ?)",
-                    listOf(listOf(1, now), listOf(2, now), listOf(3, now))
+                "insert into members(id, created_at) values (?, ?)",
+                listOf(listOf(1, now), listOf(2, now), listOf(3, now))
             )
 
             assertEquals(listOf(1, 1, 1), res)
@@ -315,7 +317,7 @@ create table members (
 
             val now = Instant.now()
             val res = session.batchPreparedNamedStatement(
-                    "insert into members(id, created_at) values (:id, :when)",
+                "insert into members(id, created_at) values (:id, :when)",
                     listOf(mapOf("id" to 1, "when" to now), mapOf("id" to 2, "when" to now), mapOf("id" to 3, "when" to now))
             )
 
@@ -324,6 +326,32 @@ create table members (
             assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
                     session.list(queryOf("select id, created_at from members")) { row -> Pair(row.int("id"), row.instant("created_At").epochSecond) })
 
+        }
+    }
+
+    @Test
+    fun testStrictMode() {
+        using(borrowConnection()) { conn ->
+            val lenientSession = Session(Connection(conn, driverName), strict = false)
+            val strictSession = Session(Connection(conn, driverName), strict = true)
+
+            lenientSession.execute(queryOf("drop table members if exists"))
+            lenientSession.execute(queryOf(createTableStmt))
+            lenientSession.update(queryOf(insert, "Alice", Date()))
+            lenientSession.update(queryOf(insert, "Alice", Date()))
+
+            val nameQuery = "select id, name, created_at from members where name = ?"
+            val lenientAlice: Member? = lenientSession.single(queryOf(nameQuery, "Alice"), toMember)
+            assertNotNull(lenientAlice)
+
+            val exception = assertFailsWith<SQLException> {
+                strictSession.single(queryOf(nameQuery, "Alice"), toMember)
+            }
+            assertEquals(
+                "Expected 1 row but received 2.",
+                exception.message,
+                "Duplicated row is expected to throw exception"
+            )
         }
     }
 
