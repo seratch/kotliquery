@@ -156,11 +156,14 @@ using(sessionOf(HikariCP.dataSource(), strict = true)) { session ->
 An alternative way to bind parameters is to use named parameters that start with `:` in the statement string. Note that, with this feature, KotliQuery still uses a prepared statement internally and your query execution is safe from SQL injection. The parameter parts like `:name` and `:age` in the following example query won't be just replaced as string values.
 
 ```kotlin
-queryOf("""select id, name, created_at 
-	from members 
-	where (:name is not null or name = :name)
-	  and (:age is not null or age = :age)""", 
-	mapOf("name" to "Alice", "age" to 20))
+queryOf(
+  """
+  select id, name, created_at 
+  from members 
+  where (name = :name) and (age = :age)
+  """, 
+  mapOf("name" to "Alice", "age" to 20)
+)
 ```
 
 Performance-wise, the named parameter syntax can be slightly slower for parsing the statement plus a tiny bit more memory-consuming. But for most use case, the overhead should be ignorable. If you would like to make your SQL statements more readable and/or if your query has to repeat the same parameter in a query, using named query parameters should improve your productivity and the maintainability of the query a lot.
@@ -200,7 +203,7 @@ session.forEach(queryOf("select id from members")) { row ->
 
 #### Transaction
 
-Running queries in a transaction is of course supported! The `Session` object provides a way to start a transaction in a certain code block. As this library is a bit opinionated, transactions are available only with a code block. We intentionally do not support `begin` / `commit` methods.
+Running queries in a transaction is of course supported! The `Session` object provides a way to start a transaction in a certain code block.
 
 ```kotlin
 session.transaction { tx ->
@@ -216,8 +219,9 @@ session.transaction { tx ->
 }
 ```
 
+As this library is a bit opinionated, transactions are available only with a code block. We intentionally do not support `begin` / `commit` methods. If you would like to manually manage the state of a transaction for some reason, you can use `session.connection.commit()` / `session.connection.rollback()` for it.
+
 ## License
 
-(The MIT License)
-
+The MIT License
 Copyright (c) 2015 - Kazuhiro Sera
