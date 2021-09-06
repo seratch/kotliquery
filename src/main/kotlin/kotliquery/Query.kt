@@ -9,9 +9,10 @@ import kotliquery.action.UpdateQueryAction
  * Database Query.
  */
 data class Query(
-        val statement: String,
-        val params: List<Any?> = listOf(),
-        val paramMap: Map<String, Any?> = mapOf()) {
+    val statement: String,
+    val params: List<Any?> = listOf(),
+    val paramMap: Map<String, Any?> = mapOf()
+) {
 
     val replacementMap: Map<String, List<Int>> = extractNamedParamsIndexed(statement)
     val cleanStatement: String = replaceNamedParams(statement)
@@ -28,7 +29,7 @@ data class Query(
         UpdateQueryAction(this)
     }
 
-    val asUpdateAndReturnGeneratedKey : UpdateAndReturnGeneratedKeyQueryAction by lazy {
+    val asUpdateAndReturnGeneratedKey: UpdateAndReturnGeneratedKeyQueryAction by lazy {
         UpdateAndReturnGeneratedKeyQueryAction(this)
     }
 

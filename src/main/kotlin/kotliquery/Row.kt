@@ -14,8 +14,9 @@ import java.util.*
  * Represents ResultSet and its each row.
  */
 data class Row(
-        val underlying: ResultSet,
-        val cursor: Int = 0) : Sequence<Row> {
+    val underlying: ResultSet,
+    val cursor: Int = 0
+) : Sequence<Row> {
 
     private class RowIterator(val rs: ResultSet, val position: Int) : Iterator<Row> {
         override fun next(): Row {
@@ -57,6 +58,7 @@ data class Row(
     fun string(columnIndex: Int): String {
         return stringOrNull(columnIndex)!!
     }
+
     fun stringOrNull(columnIndex: Int): String? {
         return nullable(underlying.getString(columnIndex))
     }
@@ -64,6 +66,7 @@ data class Row(
     fun string(columnLabel: String): String {
         return stringOrNull(columnLabel)!!
     }
+
     fun stringOrNull(columnLabel: String): String? {
         return nullable(underlying.getString(columnLabel))
     }
@@ -71,6 +74,7 @@ data class Row(
     fun any(columnIndex: Int): Any {
         return anyOrNull(columnIndex)!!
     }
+
     fun anyOrNull(columnIndex: Int): Any? {
         return nullable(underlying.getObject(columnIndex))
     }
@@ -78,6 +82,7 @@ data class Row(
     fun any(columnLabel: String): Any {
         return anyOrNull(columnLabel)!!
     }
+
     fun anyOrNull(columnLabel: String): Any? {
         return nullable(underlying.getObject(columnLabel))
     }
@@ -85,6 +90,7 @@ data class Row(
     fun long(columnIndex: Int): Long {
         return longOrNull(columnIndex)!!
     }
+
     fun longOrNull(columnIndex: Int): Long? {
         return nullable(underlying.getLong(columnIndex))
     }
@@ -92,6 +98,7 @@ data class Row(
     fun long(columnLabel: String): Long {
         return longOrNull(columnLabel)!!
     }
+
     fun longOrNull(columnLabel: String): Long? {
         return nullable(underlying.getLong(columnLabel))
     }
@@ -99,6 +106,7 @@ data class Row(
     fun bytes(columnIndex: Int): ByteArray {
         return bytesOrNull(columnIndex)!!
     }
+
     fun bytesOrNull(columnIndex: Int): ByteArray? {
         return nullable(underlying.getBytes(columnIndex))
     }
@@ -106,6 +114,7 @@ data class Row(
     fun bytes(columnLabel: String): ByteArray {
         return bytesOrNull(columnLabel)!!
     }
+
     fun bytesOrNull(columnLabel: String): ByteArray? {
         return nullable(underlying.getBytes(columnLabel))
     }
@@ -113,6 +122,7 @@ data class Row(
     fun float(columnIndex: Int): Float {
         return floatOrNull(columnIndex)!!
     }
+
     fun floatOrNull(columnIndex: Int): Float? {
         return nullable(underlying.getFloat(columnIndex))
     }
@@ -120,6 +130,7 @@ data class Row(
     fun float(columnLabel: String): Float {
         return floatOrNull(columnLabel)!!
     }
+
     fun floatOrNull(columnLabel: String): Float? {
         return nullable(underlying.getFloat(columnLabel))
     }
@@ -127,6 +138,7 @@ data class Row(
     fun short(columnIndex: Int): Short {
         return shortOrNull(columnIndex)!!
     }
+
     fun shortOrNull(columnIndex: Int): Short? {
         return nullable(underlying.getShort(columnIndex))
     }
@@ -134,6 +146,7 @@ data class Row(
     fun short(columnLabel: String): Short {
         return shortOrNull(columnLabel)!!
     }
+
     fun shortOrNull(columnLabel: String): Short? {
         return nullable(underlying.getShort(columnLabel))
     }
@@ -141,6 +154,7 @@ data class Row(
     fun double(columnIndex: Int): Double {
         return doubleOrNull(columnIndex)!!
     }
+
     fun doubleOrNull(columnIndex: Int): Double? {
         return nullable(underlying.getDouble(columnIndex))
     }
@@ -148,6 +162,7 @@ data class Row(
     fun double(columnLabel: String): Double {
         return doubleOrNull(columnLabel)!!
     }
+
     fun doubleOrNull(columnLabel: String): Double? {
         return nullable(underlying.getDouble(columnLabel))
     }
@@ -155,6 +170,7 @@ data class Row(
     fun int(columnIndex: Int): Int {
         return intOrNull(columnIndex)!!
     }
+
     fun intOrNull(columnIndex: Int): Int? {
         return nullable(underlying.getInt(columnIndex))
     }
@@ -162,6 +178,7 @@ data class Row(
     fun int(columnLabel: String): Int {
         return intOrNull(columnLabel)!!
     }
+
     fun intOrNull(columnLabel: String): Int? {
         return nullable(underlying.getInt(columnLabel))
     }
@@ -169,6 +186,7 @@ data class Row(
     fun jodaDateTime(columnIndex: Int): DateTime {
         return jodaDateTimeOrNull(columnIndex)!!
     }
+
     fun jodaDateTimeOrNull(columnIndex: Int): DateTime? {
         val timestamp = sqlTimestampOrNull(columnIndex)
         if (timestamp == null) {
@@ -181,6 +199,7 @@ data class Row(
     fun jodaDateTime(columnLabel: String): DateTime {
         return jodaDateTimeOrNull(columnLabel)!!
     }
+
     fun jodaDateTimeOrNull(columnLabel: String): DateTime? {
         val timestamp = sqlTimestampOrNull(columnLabel)
         if (timestamp == null) {
@@ -193,6 +212,7 @@ data class Row(
     fun jodaLocalDate(columnIndex: Int): org.joda.time.LocalDate {
         return jodaLocalDateOrNull(columnIndex)!!
     }
+
     fun jodaLocalDateOrNull(columnIndex: Int): org.joda.time.LocalDate? {
         val timestamp = sqlTimestampOrNull(columnIndex)
         if (timestamp == null) {
@@ -205,6 +225,7 @@ data class Row(
     fun jodaLocalDate(columnLabel: String): org.joda.time.LocalDate {
         return jodaLocalDateOrNull(columnLabel)!!
     }
+
     fun jodaLocalDateOrNull(columnLabel: String): org.joda.time.LocalDate? {
         val timestamp = sqlTimestampOrNull(columnLabel)
         if (timestamp == null) {
@@ -217,6 +238,7 @@ data class Row(
     fun jodaLocalTime(columnIndex: Int): org.joda.time.LocalTime {
         return jodaLocalTimeOrNull(columnIndex)!!
     }
+
     fun jodaLocalTimeOrNull(columnIndex: Int): org.joda.time.LocalTime? {
         val timestamp = sqlTimestampOrNull(columnIndex)
         if (timestamp == null) {
@@ -229,6 +251,7 @@ data class Row(
     fun jodaLocalTime(columnLabel: String): org.joda.time.LocalTime {
         return jodaLocalTimeOrNull(columnLabel)!!
     }
+
     fun jodaLocalTimeOrNull(columnLabel: String): org.joda.time.LocalTime? {
         val timestamp = sqlTimestampOrNull(columnLabel)
         if (timestamp == null) {
@@ -241,42 +264,47 @@ data class Row(
     fun zonedDateTime(columnIndex: Int): ZonedDateTime {
         return zonedDateTimeOrNull(columnIndex)!!
     }
+
     fun zonedDateTimeOrNull(columnIndex: Int): ZonedDateTime? = nullable(
-            sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
-                ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
-        } 
+        sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
+            ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
+        }
     )
 
     fun zonedDateTime(columnLabel: String): ZonedDateTime {
         return zonedDateTimeOrNull(columnLabel)!!
     }
+
     fun zonedDateTimeOrNull(columnLabel: String): ZonedDateTime? = nullable(
-            sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
-                ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
-            } 
+        sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
+            ZonedDateTime.ofInstant(it, ZoneId.systemDefault())
+        }
     )
 
     fun offsetDateTime(columnIndex: Int): OffsetDateTime {
         return offsetDateTimeOrNull(columnIndex)!!
     }
+
     fun offsetDateTimeOrNull(columnIndex: Int): OffsetDateTime? = nullable(
-            sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
-                OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
-            } 
+        sqlTimestampOrNull(columnIndex)?.toInstant()?.let {
+            OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
+        }
     )
 
     fun offsetDateTime(columnLabel: String): OffsetDateTime {
         return offsetDateTimeOrNull(columnLabel)!!
     }
+
     fun offsetDateTimeOrNull(columnLabel: String): OffsetDateTime? = nullable(
-            sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
-                OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
-            }
+        sqlTimestampOrNull(columnLabel)?.toInstant()?.let {
+            OffsetDateTime.ofInstant(it, ZoneId.systemDefault())
+        }
     )
 
     fun instant(columnIndex: Int): Instant {
         return instantOrNull(columnIndex)!!
     }
+
     fun instantOrNull(columnIndex: Int): Instant? {
         return nullable(sqlTimestampOrNull(columnIndex)?.toInstant())
     }
@@ -284,6 +312,7 @@ data class Row(
     fun instant(columnLabel: String): Instant {
         return instantOrNull(columnLabel)!!
     }
+
     fun instantOrNull(columnLabel: String): Instant? {
         return nullable(sqlTimestampOrNull(columnLabel)?.toInstant())
     }
@@ -291,6 +320,7 @@ data class Row(
     fun localDateTime(columnIndex: Int): LocalDateTime {
         return localDateTimeOrNull(columnIndex)!!
     }
+
     fun localDateTimeOrNull(columnIndex: Int): LocalDateTime? {
         return sqlTimestampOrNull(columnIndex)?.toLocalDateTime()
     }
@@ -298,6 +328,7 @@ data class Row(
     fun localDateTime(columnLabel: String): LocalDateTime {
         return localDateTimeOrNull(columnLabel)!!
     }
+
     fun localDateTimeOrNull(columnLabel: String): LocalDateTime? {
         return sqlTimestampOrNull(columnLabel)?.toLocalDateTime()
     }
@@ -305,6 +336,7 @@ data class Row(
     fun localDate(columnIndex: Int): LocalDate {
         return localDateOrNull(columnIndex)!!
     }
+
     fun localDateOrNull(columnIndex: Int): LocalDate? {
         return sqlTimestampOrNull(columnIndex)?.toLocalDateTime()?.toLocalDate()
     }
@@ -312,6 +344,7 @@ data class Row(
     fun localDate(columnLabel: String): LocalDate {
         return localDateOrNull(columnLabel)!!
     }
+
     fun localDateOrNull(columnLabel: String): LocalDate? {
         return sqlTimestampOrNull(columnLabel)?.toLocalDateTime()?.toLocalDate()
     }
@@ -319,6 +352,7 @@ data class Row(
     fun localTime(columnIndex: Int): LocalTime {
         return localTimeOrNull(columnIndex)!!
     }
+
     fun localTimeOrNull(columnIndex: Int): LocalTime? {
         return sqlTimestampOrNull(columnIndex)?.toLocalDateTime()?.toLocalTime()
     }
@@ -326,6 +360,7 @@ data class Row(
     fun localTime(columnLabel: String): LocalTime {
         return localTimeOrNull(columnLabel)!!
     }
+
     fun localTimeOrNull(columnLabel: String): LocalTime? {
         return sqlTimestampOrNull(columnLabel)?.toLocalDateTime()?.toLocalTime()
     }
@@ -333,6 +368,7 @@ data class Row(
     fun sqlDate(columnIndex: Int): java.sql.Date {
         return sqlDateOrNull(columnIndex)!!
     }
+
     fun sqlDateOrNull(columnIndex: Int): java.sql.Date? {
         return nullable(underlying.getDate(columnIndex))
     }
@@ -340,6 +376,7 @@ data class Row(
     fun sqlDate(columnLabel: String): java.sql.Date {
         return sqlDateOrNull(columnLabel)!!
     }
+
     fun sqlDateOrNull(columnLabel: String): java.sql.Date? {
         return nullable(underlying.getDate(columnLabel))
     }
@@ -347,6 +384,7 @@ data class Row(
     fun sqlDate(columnIndex: Int, cal: Calendar): Date {
         return sqlDateOrNull(columnIndex, cal)!!
     }
+
     fun sqlDateOrNull(columnIndex: Int, cal: Calendar): Date? {
         return nullable(underlying.getDate(columnIndex, cal))
     }
@@ -354,6 +392,7 @@ data class Row(
     fun sqlDate(columnLabel: String, cal: Calendar): Date {
         return sqlDateOrNull(columnLabel, cal)!!
     }
+
     fun sqlDateOrNull(columnLabel: String, cal: Calendar): Date? {
         return nullable(underlying.getDate(columnLabel, cal))
     }
@@ -369,6 +408,7 @@ data class Row(
     fun bigDecimal(columnIndex: Int): BigDecimal {
         return bigDecimalOrNull(columnIndex)!!
     }
+
     fun bigDecimalOrNull(columnIndex: Int): BigDecimal? {
         return nullable(underlying.getBigDecimal(columnIndex))
     }
@@ -376,6 +416,7 @@ data class Row(
     fun bigDecimal(columnLabel: String): BigDecimal {
         return bigDecimalOrNull(columnLabel)!!
     }
+
     fun bigDecimalOrNull(columnLabel: String): BigDecimal? {
         return nullable(underlying.getBigDecimal(columnLabel))
     }
@@ -383,6 +424,7 @@ data class Row(
     fun sqlTime(columnIndex: Int): java.sql.Time {
         return sqlTimeOrNull(columnIndex)!!
     }
+
     fun sqlTimeOrNull(columnIndex: Int): java.sql.Time? {
         return nullable(underlying.getTime(columnIndex))
     }
@@ -390,6 +432,7 @@ data class Row(
     fun sqlTime(columnLabel: String): java.sql.Time {
         return sqlTimeOrNull(columnLabel)!!
     }
+
     fun sqlTimeOrNull(columnLabel: String): java.sql.Time? {
         return nullable(underlying.getTime(columnLabel))
     }
@@ -397,6 +440,7 @@ data class Row(
     fun sqlTime(columnIndex: Int, cal: Calendar): java.sql.Time {
         return sqlTimeOrNull(columnIndex, cal)!!
     }
+
     fun sqlTimeOrNull(columnIndex: Int, cal: Calendar): java.sql.Time? {
         return nullable(underlying.getTime(columnIndex, cal))
     }
@@ -404,6 +448,7 @@ data class Row(
     fun sqlTime(columnLabel: String, cal: Calendar): java.sql.Time {
         return sqlTimeOrNull(columnLabel, cal)!!
     }
+
     fun sqlTimeOrNull(columnLabel: String, cal: Calendar): java.sql.Time? {
         return nullable(underlying.getTime(columnLabel, cal))
     }
@@ -411,6 +456,7 @@ data class Row(
     fun url(columnIndex: Int): URL {
         return urlOrNull(columnIndex)!!
     }
+
     fun urlOrNull(columnIndex: Int): URL? {
         return nullable(underlying.getURL(columnIndex))
     }
@@ -418,6 +464,7 @@ data class Row(
     fun url(columnLabel: String): URL {
         return urlOrNull(columnLabel)!!
     }
+
     fun urlOrNull(columnLabel: String): URL? {
         return nullable(underlying.getURL(columnLabel))
     }
@@ -425,6 +472,7 @@ data class Row(
     fun blob(columnIndex: Int): Blob {
         return blobOrNull(columnIndex)!!
     }
+
     fun blobOrNull(columnIndex: Int): Blob? {
         return nullable(underlying.getBlob(columnIndex))
     }
@@ -432,6 +480,7 @@ data class Row(
     fun blob(columnLabel: String): Blob {
         return blobOrNull(columnLabel)!!
     }
+
     fun blobOrNull(columnLabel: String): Blob? {
         return nullable(underlying.getBlob(columnLabel))
     }
@@ -439,6 +488,7 @@ data class Row(
     fun byte(columnIndex: Int): Byte {
         return byteOrNull(columnIndex)!!
     }
+
     fun byteOrNull(columnIndex: Int): Byte? {
         return nullable(underlying.getByte(columnIndex))
     }
@@ -446,6 +496,7 @@ data class Row(
     fun byte(columnLabel: String): Byte {
         return byteOrNull(columnLabel)!!
     }
+
     fun byteOrNull(columnLabel: String): Byte? {
         return nullable(underlying.getByte(columnLabel))
     }
@@ -453,6 +504,7 @@ data class Row(
     fun clob(columnIndex: Int): java.sql.Clob {
         return clobOrNull(columnIndex)!!
     }
+
     fun clobOrNull(columnIndex: Int): java.sql.Clob? {
         return nullable(underlying.getClob(columnIndex))
     }
@@ -460,6 +512,7 @@ data class Row(
     fun clob(columnLabel: String): java.sql.Clob {
         return clobOrNull(columnLabel)!!
     }
+
     fun clobOrNull(columnLabel: String): java.sql.Clob? {
         return nullable(underlying.getClob(columnLabel))
     }
@@ -467,6 +520,7 @@ data class Row(
     fun nClob(columnIndex: Int): java.sql.NClob {
         return nClobOrNull(columnIndex)!!
     }
+
     fun nClobOrNull(columnIndex: Int): NClob? {
         return nullable(underlying.getNClob(columnIndex))
     }
@@ -474,27 +528,31 @@ data class Row(
     fun nClob(columnLabel: String): java.sql.NClob {
         return nClobOrNull(columnLabel)!!
     }
+
     fun nClobOrNull(columnLabel: String): NClob? {
         return nullable(underlying.getNClob(columnLabel))
     }
 
     inline fun <reified T> array(columnIndex: Int): Array<T> = arrayOrNull(columnIndex)!!
 
+    @Suppress("UNCHECKED_CAST")
     inline fun <reified T> arrayOrNull(columnIndex: Int): Array<T>? {
-        val result = sqlArrayOrNull(columnIndex)?.array as kotlin.Array<Any>?
+        val result = sqlArrayOrNull(columnIndex)?.array as Array<*>?
         return result?.map { it as T }?.toTypedArray()
     }
 
     inline fun <reified T> array(columnLabel: String): Array<T> = arrayOrNull(columnLabel)!!
 
+    @Suppress("UNCHECKED_CAST")
     inline fun <reified T> arrayOrNull(columnLabel: String): Array<T>? {
-        val result = sqlArrayOrNull(columnLabel)?.array as kotlin.Array<Any>?
+        val result = sqlArrayOrNull(columnLabel)?.array as Array<Any>?
         return result?.map { it as T }?.toTypedArray()
     }
 
     fun sqlArray(columnIndex: Int): java.sql.Array {
         return sqlArrayOrNull(columnIndex)!!
     }
+
     fun sqlArrayOrNull(columnIndex: Int): java.sql.Array? {
         return nullable(underlying.getArray(columnIndex))
     }
@@ -502,6 +560,7 @@ data class Row(
     fun sqlArray(columnLabel: String): java.sql.Array {
         return sqlArrayOrNull(columnLabel)!!
     }
+
     fun sqlArrayOrNull(columnLabel: String): java.sql.Array? {
         return nullable(underlying.getArray(columnLabel))
     }
@@ -509,6 +568,7 @@ data class Row(
     fun asciiStream(columnIndex: Int): InputStream {
         return asciiStreamOrNull(columnIndex)!!
     }
+
     fun asciiStreamOrNull(columnIndex: Int): InputStream? {
         return nullable(underlying.getAsciiStream(columnIndex))
     }
@@ -516,6 +576,7 @@ data class Row(
     fun asciiStream(columnLabel: String): InputStream {
         return asciiStreamOrNull(columnLabel)!!
     }
+
     fun asciiStreamOrNull(columnLabel: String): InputStream? {
         return nullable(underlying.getAsciiStream(columnLabel))
     }
@@ -523,6 +584,7 @@ data class Row(
     fun sqlTimestamp(columnIndex: Int): java.sql.Timestamp {
         return sqlTimestampOrNull(columnIndex)!!
     }
+
     fun sqlTimestampOrNull(columnIndex: Int): java.sql.Timestamp? {
         return nullable(underlying.getTimestamp(columnIndex))
     }
@@ -530,6 +592,7 @@ data class Row(
     fun sqlTimestamp(columnLabel: String): java.sql.Timestamp {
         return sqlTimestampOrNull(columnLabel)!!
     }
+
     fun sqlTimestampOrNull(columnLabel: String): java.sql.Timestamp? {
         return nullable(underlying.getTimestamp(columnLabel))
     }
@@ -537,6 +600,7 @@ data class Row(
     fun sqlTimestamp(columnIndex: Int, cal: Calendar): java.sql.Timestamp {
         return sqlTimestampOrNull(columnIndex, cal)!!
     }
+
     fun sqlTimestampOrNull(columnIndex: Int, cal: Calendar): java.sql.Timestamp? {
         return nullable(underlying.getTimestamp(columnIndex, cal))
     }
@@ -544,6 +608,7 @@ data class Row(
     fun sqlTimestamp(columnLabel: String, cal: Calendar): java.sql.Timestamp {
         return sqlTimestampOrNull(columnLabel, cal)!!
     }
+
     fun sqlTimestampOrNull(columnLabel: String, cal: Calendar): java.sql.Timestamp? {
         return nullable(underlying.getTimestamp(columnLabel, cal))
     }
@@ -551,6 +616,7 @@ data class Row(
     fun ref(columnIndex: Int): Ref {
         return refOrNull(columnIndex)!!
     }
+
     fun refOrNull(columnIndex: Int): Ref? {
         return nullable(underlying.getRef(columnIndex))
     }
@@ -558,6 +624,7 @@ data class Row(
     fun ref(columnLabel: String): Ref {
         return refOrNull(columnLabel)!!
     }
+
     fun refOrNull(columnLabel: String): Ref? {
         return nullable(underlying.getRef(columnLabel))
     }
@@ -565,6 +632,7 @@ data class Row(
     fun nCharacterStream(columnIndex: Int): Reader {
         return nCharacterStreamOrNull(columnIndex)!!
     }
+
     fun nCharacterStreamOrNull(columnIndex: Int): Reader? {
         return nullable(underlying.getNCharacterStream(columnIndex))
     }
@@ -572,6 +640,7 @@ data class Row(
     fun nCharacterStream(columnLabel: String): Reader {
         return nCharacterStreamOrNull(columnLabel)!!
     }
+
     fun nCharacterStreamOrNull(columnLabel: String): Reader? {
         return nullable(underlying.getNCharacterStream(columnLabel))
     }
@@ -583,6 +652,7 @@ data class Row(
     fun binaryStream(columnIndex: Int): InputStream {
         return binaryStreamOrNull(columnIndex)!!
     }
+
     fun binaryStreamOrNull(columnIndex: Int): InputStream? {
         return nullable(underlying.getBinaryStream(columnIndex))
     }
@@ -590,6 +660,7 @@ data class Row(
     fun binaryStream(columnLabel: String): InputStream {
         return binaryStreamOrNull(columnLabel)!!
     }
+
     fun binaryStreamOrNull(columnLabel: String): InputStream? {
         return nullable(underlying.getBinaryStream(columnLabel))
     }

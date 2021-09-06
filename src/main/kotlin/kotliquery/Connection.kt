@@ -6,9 +6,10 @@ import java.sql.SQLException
  * Database Connection.
  */
 data class Connection(
-        val underlying: java.sql.Connection,
-        val driverName: String = "",
-        val jtaCompatible: Boolean = false) {
+    val underlying: java.sql.Connection,
+    val driverName: String = "",
+    val jtaCompatible: Boolean = false
+) {
 
     fun begin(): Unit {
         underlying.autoCommit = false
@@ -26,7 +27,7 @@ data class Connection(
         underlying.rollback()
         try {
             underlying.autoCommit = true
-        } catch(e: SQLException) {
+        } catch (e: SQLException) {
         }
     }
 

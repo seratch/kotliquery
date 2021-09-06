@@ -17,7 +17,13 @@ fun queryOf(statement: String, paramMap: Map<String, Any?>): Query {
 /**
  * Builds Session object.
  */
-fun sessionOf(url: String, user: String, password: String, returnGeneratedKey: Boolean = false, strict: Boolean = false): Session {
+fun sessionOf(
+    url: String,
+    user: String,
+    password: String,
+    returnGeneratedKey: Boolean = false,
+    strict: Boolean = false
+): Session {
     val conn = DriverManager.getConnection(url, user, password)
     return Session(Connection(conn), returnGeneratedKey, strict = strict)
 }

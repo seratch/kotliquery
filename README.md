@@ -3,13 +3,17 @@
 [![Build Status](https://travis-ci.org/seratch/kotliquery.svg)](https://travis-ci.org/seratch/kotliquery)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.seratch/kotliquery.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.seratch%22%20AND%20a:%22kotliquery%22)
 
-A handy RDB client library in Kotlin. Highly inspired from [ScalikeJDBC](http://scalikejdbc.org/). This library focuses on providing handy and Kotlin-ish API to issue a query and extract values from its JDBC ResultSet iterator.
+KotliQuery is a handy RDB client library for Kotlin developers! The design is highly inspired by [ScalikeJDBC](http://scalikejdbc.org/), which is a proven database library in Scala. The priorities in this project are:
+
+* Less learning time
+* No breaking changes in releases
+* No additional complexity on top of JDBC
+
+This library simply mitigates some pain points of the JDBC but our goal is not to completely encapsulate it.
 
 ### Getting Started
 
-You can try this library with Gradle right now. See the sample project:
-
-https://github.com/seratch/kotliquery/tree/master/sample
+The quickest way to try this library out would be to start with a simple Gradle project. You can find some examples [here](https://github.com/seratch/kotliquery/tree/master/sample).
 
 #### build.gradle
 
@@ -17,7 +21,7 @@ https://github.com/seratch/kotliquery/tree/master/sample
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.3.11'
+    ext.kotlin_version = '1.5.30'
     repositories {
         mavenCentral()
     }
@@ -29,10 +33,10 @@ repositories {
     mavenCentral()
 }
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile 'com.github.seratch:kotliquery:1.3.0'
-    compile 'com.h2database:h2:1.4.197'
-    compile 'com.zaxxer:HikariCP:3.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation 'com.github.seratch:kotliquery:1.6.0'
+    implementation 'com.h2database:h2:1.4.200'
+    implementation 'com.zaxxer:HikariCP:5.0.0'
 }
 ```
 
