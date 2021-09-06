@@ -42,7 +42,7 @@ dependencies {
 
 ### Example
 
-KotliQuery is more easy-to-use than you expect. Just after reading this short section, you will have learnt enough.
+KotliQuery is much more easy-to-use than you expect. After just reading this short section, you will have learnt enough.
 
 #### Creating DB Session
 
@@ -56,7 +56,7 @@ val session = sessionOf("jdbc:h2:mem:hello", "user", "pass")
 
 #### HikariCP
 
-For production-grade applications, utilizing a connection pool library for better connection management is generally recommended. KotliQuery provides an out-of-the-box solution that leverages [HikariCP](https://github.com/brettwooldridge/HikariCP), which is a widely accepted connection pool library.
+For production-grade applications, utilizing a connection pool library for better performance and resource management is highly recommended. KotliQuery provides an out-of-the-box solution that leverages [HikariCP](https://github.com/brettwooldridge/HikariCP), which is a widely accepted connection pool library.
 
 ```kotlin
 HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
@@ -68,7 +68,7 @@ using(sessionOf(HikariCP.dataSource())) { session ->
 
 #### DDL Execution
 
-You acn use a session for executing both DDLs and DMLs. The `asExecute` method if a query object sets the underlying JDBC Statement method to [`execute`](https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#execute-java.lang.String-).
+You can use a session for executing both DDLs and DMLs. The `asExecute` method if a query object sets the underlying JDBC Statement method to [`execute`](https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#execute-java.lang.String-).
 
 ```kotlin
 session.run(queryOf("""
@@ -82,7 +82,7 @@ session.run(queryOf("""
 
 #### Update Operations
 
-For insert/update/delete statements, using `asUpdate` is appropriate. This method sets the underlying JDBC Statement method to [executeUpdate](https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#executeUpdate-java.lang.String-). 
+Using `asUpdate` is an appropriate way to perform insert/update/delete statements. This method sets the underlying JDBC Statement method to [`executeUpdate`](https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html#executeUpdate-java.lang.String-). 
 
 ```kotlin
 val insertQuery: String = "insert into members (name,  created_at) values (?, ?)"
@@ -93,18 +93,25 @@ session.run(queryOf(insertQuery, "Bob", Date()).asUpdate)
 
 #### Select Queries
 
-Now you've got a database table named `members`! Let's run your first SQL statement with this library. To run a query, your code follows the three steps as below:
+Now that you've got a database table named `members`, it's time to run your first SQL statement with this library! To build a callable SQL executor, your code follows the three steps for it:
 
-- Create a `Query` object by using `queryOf` factory method
-- Attach an extractor function (`(Row) -> A`) to the `Query` object via `#map` method
+- Use `queryOf` factory method with a query statement and its parameters to create a new `Query` object
+- Use `#map` method to attache a result extracting function (`(Row) -> A`) to the `Query` object
 - Specify the response type (`asList`/`asSingle`) for the result
+
+The following query returns a list of all member's IDs. In this line, the SQL statement is not yet executed. Also, this object `allIdsQuery` does not have any state. This means that you can reuse th object multiple times.
 
 ```kotlin
 val allIdsQuery = queryOf("select id from members").map { row -> row.int("id") }.asList
+```
+
+With a valid session object, you can perform the SQL statement. The type of returned `ids` would be safely determined by Kotlin compiler.
+
+```kotlin
 val ids: List<Int> = session.run(allIdsQuery)
 ```
 
-An extractor function can return any type of result from underlying JDBC `ResultSet` iterator.
+As you see, the extractor function is greatly flexible. You can define functions with any return type. All you need to do is to implement a function that extracts values from JDBC `ResultSet` interator and map them into a single expected type value. Here is a complete example:
 
 ```kotlin
 data class Member(
