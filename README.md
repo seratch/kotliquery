@@ -34,9 +34,8 @@ repositories {
 }
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.github.seratch:kotliquery:1.6.0'
+    implementation 'com.github.seratch:kotliquery:1.6.1'
     implementation 'com.h2database:h2:1.4.200'
-    implementation 'com.zaxxer:HikariCP:4.0.3'
 }
 ```
 
