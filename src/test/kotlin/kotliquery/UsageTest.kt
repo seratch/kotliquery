@@ -424,6 +424,32 @@ create table members (
         }
     }
 
+    @Test
+    fun testTransactionalStrictMode() {
+        using(borrowConnection()) { conn ->
+            val strictSession = Session(Connection(conn, driverName), strict = true)
+
+            strictSession.execute(queryOf("drop table members if exists"))
+            strictSession.execute(queryOf(createTableStmt))
+            strictSession.update(queryOf(insert, "Alice", Date()))
+            strictSession.update(queryOf(insert, "Alice", Date()))
+
+            val nameQuery = "select id, name, created_at from members where name = ?"
+
+            val exception = assertFailsWith<SQLException> {
+                strictSession.transaction { transactionalSession ->
+                    transactionalSession.single(queryOf(nameQuery, "Alice"), toMember)
+                }
+            }
+            assertEquals(
+                "Expected 1 row but received 2.",
+                exception.message,
+                "Duplicated row is expected to throw exception"
+            )
+        }
+    }
+
+
     private fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
         using(borrowConnection()) { conn ->
             val session = Session(Connection(conn, driverName))
