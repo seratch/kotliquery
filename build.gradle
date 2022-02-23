@@ -33,7 +33,7 @@ dependencies {
     implementation "org.slf4j:slf4j-api:1.7.36"
     implementation "joda-time:joda-time:2.10.13"
     // TODO: upgrade to 5+ when dropping Java 8 supports
-    implementation "com.zaxxer:HikariCP:5.0.1"
+    implementation "com.zaxxer:HikariCP:4.0.3"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     testImplementation "com.h2database:h2:2.1.210"
     testImplementation "junit:junit:4.13.2"

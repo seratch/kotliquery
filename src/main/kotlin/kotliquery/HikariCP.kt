@@ -9,16 +9,7 @@ object HikariCP {
 
     private val pools: ConcurrentMap<String, HikariDataSource> = ConcurrentHashMap()
 
-    @Deprecated(
-        message = "Use 'init' method",
-        replaceWith =
-        ReplaceWith("init(url, username, password)", "kotliquery.HikariCP.init")
-    )
-    fun default(
-        url: String,
-        username: String,
-        password: String
-    ): HikariDataSource {
+    fun default(url: String, username: String, password: String): HikariDataSource {
         return init("default", url, username, password)
     }
 
