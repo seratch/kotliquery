@@ -1,5 +1,12 @@
 package kotliquery
 
+val testDataSource = HikariCP.init(
+    url = "jdbc:h2:mem:default",
+    username = "user",
+    password = "pass"
+) {
+    maximumPoolSize = 2
+}
 
 fun describe(description: String, tests: () -> Unit) {
     println(description)

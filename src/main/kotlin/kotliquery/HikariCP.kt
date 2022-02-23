@@ -13,14 +13,23 @@ object HikariCP {
         return init("default", url, username, password)
     }
 
-    fun init(name: String, url: String, username: String, password: String): HikariDataSource {
-        val config: HikariConfig = HikariConfig()
+    fun init(
+        name: String = "default",
+        url: String,
+        username: String,
+        password: String,
+        configPropertiesFn: HikariConfig.() -> Unit = { }
+    ): HikariDataSource {
+        val config = HikariConfig()
         config.jdbcUrl = url
         config.username = username
         config.password = password
         config.addDataSourceProperty("cachePrepStmts", "true")
         config.addDataSourceProperty("prepStmtCacheSize", "250")
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048")
+
+        config.configPropertiesFn()
+
         val existing: HikariDataSource? = pools[name]
         if (existing != null && !existing.isClosed) {
             existing.close()
