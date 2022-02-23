@@ -1,17 +1,14 @@
 package kotliquery
 
+import org.junit.Before
 import org.junit.Test
-import java.sql.DriverManager
 import java.sql.PreparedStatement
 import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.*
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.*
 
 class UsageTest {
 
@@ -27,29 +24,28 @@ class UsageTest {
 
     private val insert = "insert into members (name,  created_at) values (?, ?)"
 
+    private val dropTableStmt = "drop table members if exists"
+
     private val createTableStmt = """
-create table members (
-  id serial not null primary key,
-  name varchar(64),
-  created_at timestamp not null
-)
-        """
+        create table members (
+            id serial primary key,
+            name varchar(64),
+            created_at timestamp not null
+        )
+    """.trimIndent()
 
-
-    private fun borrowConnection(): java.sql.Connection {
-        return DriverManager.getConnection("jdbc:h2:mem:usage;MODE=PostgreSQL", "user", "pass")
+    @Before
+    fun before() {
+        using(sessionOf(testDataSource)) { session ->
+            session.execute(queryOf(dropTableStmt))
+            session.execute(queryOf(createTableStmt))
+        }
     }
-
-    private val driverName = "org.h2.Driver"
 
     @Test
     fun sessionUsage() {
-        using(borrowConnection()) { conn ->
+        using(sessionOf(testDataSource)) { session ->
 
-            val session = Session(Connection(conn, driverName))
-
-            session.execute(queryOf("drop table members if exists"))
-            session.execute(queryOf(createTableStmt))
             session.update(queryOf(insert, "Alice", Date()))
             session.update(queryOf(insert, "Bob", Date()))
 
@@ -81,11 +77,7 @@ create table members (
 
     @Test
     fun addNewWithId() {
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
-            session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf(createTableStmt).asExecute)
-
+        using(sessionOf(testDataSource, returnGeneratedKey = true)) { session ->
             // session usage example
             val createdID = session.run(queryOf(insert, "Fred", Date()).asUpdateAndReturnGeneratedKey)
             assertEquals(1, createdID)
@@ -99,12 +91,7 @@ create table members (
 
     @Test
     fun actionUsage() {
-        using(borrowConnection()) { conn ->
-
-            val session = Session(Connection(conn, driverName))
-
-            session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf(createTableStmt).asExecute)
+        using(sessionOf(testDataSource)) { session ->
 
             session.run(queryOf(insert, "Alice", Date()).asUpdate)
             session.run(queryOf(insert, "Bob", Date()).asUpdate)
@@ -137,14 +124,9 @@ create table members (
 
     @Test
     fun transactionUsage() {
-        using(borrowConnection()) { conn ->
+        using(sessionOf(testDataSource)) { session ->
 
             val idsQuery = queryOf("select id from members").map { row -> row.int("id") }.asList
-
-            val session = Session(Connection(conn, driverName))
-
-            session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf(createTableStmt).asExecute)
 
             session.run(queryOf(insert, "Alice", Date()).asUpdate)
             session.transaction { tx -> tx.run(queryOf(insert, "Bob", Date()).asUpdate) }
@@ -164,12 +146,15 @@ create table members (
 
     @Test
     fun testHikariCPUsage() {
-        HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
 
-        using(sessionOf(HikariCP.dataSource())) { session ->
+        val helloDataSource = HikariCP.init("hello","jdbc:h2:mem:hello", "user", "pass")
 
-            session.run(queryOf("drop table members if exists").asExecute)
-            session.run(queryOf(createTableStmt).asExecute)
+        assertNotSame(helloDataSource, testDataSource)
+        assertSame(helloDataSource, HikariCP.dataSource("hello"))
+
+        using(sessionOf(helloDataSource, returnGeneratedKey = true)) { session ->
+
+            session.execute(queryOf(createTableStmt))
 
             listOf("Alice", "Bob").forEach { name ->
                 session.update(queryOf(insert, name, Date()))
@@ -177,6 +162,8 @@ create table members (
             val ids: List<Int> = session.list(queryOf("select id from members")) { row -> row.int("id") }
             assertEquals(2, ids.size)
         }
+
+        helloDataSource.close()
     }
 
 
@@ -252,18 +239,17 @@ create table members (
     @Test
     fun nullParamsJdbcHandling() {
         // this test could fail for PostgreSQL
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
+        using(sessionOf(testDataSource)) { session ->
 
-            session.run(queryOf("drop table if exists members").asExecute)
-            session.run(
+            session.execute(queryOf("drop table if exists members"))
+            session.execute(
                 queryOf(
                     """
-create table members (
-  id serial not null primary key
-)
-        """
-                ).asExecute
+                    create table members (
+                      id serial not null primary key
+                    )
+                    """.trimIndent()
+                )
             )
             session.run(queryOf("insert into members(id) values (1)").asUpdate)
 
@@ -311,19 +297,17 @@ create table members (
 
     @Test
     fun createAnArray() {
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
+        using(sessionOf(testDataSource)) { session ->
 
-            session.run(queryOf("drop table if exists members").asExecute)
-            session.run(
-                queryOf(
-                    """
-create table members (
-  id serial not null primary key,
-  random_numbers array
-)
-        """
-                ).asExecute
+            session.execute(queryOf("drop table if exists members"))
+            session.execute(
+                queryOf("""
+                    create table members (
+                        id serial primary key,
+                        random_numbers integer array
+                    )
+                """.trimIndent()
+                )
             )
             session.run(
                 queryOf(
@@ -342,11 +326,7 @@ create table members (
 
     @Test
     fun batchPreparedStatement() {
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
-
-            session.execute(queryOf("drop table members if exists"))
-            session.execute(queryOf(createTableStmt))
+        using(sessionOf(testDataSource)) { session ->
 
             val now = Instant.now()
             val res = session.batchPreparedStatement(
@@ -369,11 +349,7 @@ create table members (
 
     @Test
     fun batchPreparedNamedStatement() {
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
-
-            session.execute(queryOf("drop table members if exists"))
-            session.execute(queryOf(createTableStmt))
+        using(sessionOf(testDataSource)) { session ->
 
             val now = Instant.now()
             val res = session.batchPreparedNamedStatement(
@@ -400,21 +376,21 @@ create table members (
 
     @Test
     fun testStrictMode() {
-        using(borrowConnection()) { conn ->
-            val lenientSession = Session(Connection(conn, driverName), strict = false)
-            val strictSession = Session(Connection(conn, driverName), strict = true)
 
-            lenientSession.execute(queryOf("drop table members if exists"))
-            lenientSession.execute(queryOf(createTableStmt))
-            lenientSession.update(queryOf(insert, "Alice", Date()))
-            lenientSession.update(queryOf(insert, "Alice", Date()))
+        val nameQuery = "select id, name, created_at from members where name = ?"
 
-            val nameQuery = "select id, name, created_at from members where name = ?"
-            val lenientAlice: Member? = lenientSession.single(queryOf(nameQuery, "Alice"), toMember)
+        using(sessionOf(testDataSource, strict = false)) { session ->
+
+            session.update(queryOf(insert, "Alice", Date()))
+            session.update(queryOf(insert, "Alice", Date()))
+
+            val lenientAlice: Member? = session.single(queryOf(nameQuery, "Alice"), toMember)
             assertNotNull(lenientAlice)
+        }
 
+        using(sessionOf(testDataSource, strict = true)) { session ->
             val exception = assertFailsWith<SQLException> {
-                strictSession.single(queryOf(nameQuery, "Alice"), toMember)
+                session.single(queryOf(nameQuery, "Alice"), toMember)
             }
             assertEquals(
                 "Expected 1 row but received 2.",
@@ -426,18 +402,15 @@ create table members (
 
     @Test
     fun testTransactionalStrictMode() {
-        using(borrowConnection()) { conn ->
-            val strictSession = Session(Connection(conn, driverName), strict = true)
+        using(sessionOf(testDataSource, strict = true)) { session ->
 
-            strictSession.execute(queryOf("drop table members if exists"))
-            strictSession.execute(queryOf(createTableStmt))
-            strictSession.update(queryOf(insert, "Alice", Date()))
-            strictSession.update(queryOf(insert, "Alice", Date()))
+            session.update(queryOf(insert, "Alice", Date()))
+            session.update(queryOf(insert, "Alice", Date()))
 
             val nameQuery = "select id, name, created_at from members where name = ?"
 
             val exception = assertFailsWith<SQLException> {
-                strictSession.transaction { transactionalSession ->
+                session.transaction { transactionalSession ->
                     transactionalSession.single(queryOf(nameQuery, "Alice"), toMember)
                 }
             }
@@ -451,8 +424,7 @@ create table members (
 
 
     private fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
-        using(borrowConnection()) { conn ->
-            val session = Session(Connection(conn, driverName))
+        using(sessionOf(testDataSource)) { session ->
 
             val preparedStmt = session.createPreparedStatement(query)
 

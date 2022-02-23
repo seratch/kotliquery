@@ -5,10 +5,20 @@ import java.io.InputStream
 import java.io.Reader
 import java.math.BigDecimal
 import java.net.URL
-import java.sql.*
-import java.sql.Date
-import java.time.*
-import java.util.*
+import java.sql.Blob
+import java.sql.NClob
+import java.sql.Ref
+import java.sql.ResultSet
+import java.sql.ResultSetMetaData
+import java.sql.SQLWarning
+import java.sql.Statement
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 /**
  * Represents ResultSet and its each row.
@@ -24,7 +34,7 @@ data class Row(
         }
 
         override fun hasNext(): Boolean {
-            return rs.isClosed == false && rs.next();
+            return rs.isClosed == false && rs.next()
         }
     }
 
@@ -51,7 +61,7 @@ data class Row(
         return underlying.next()
     }
 
-    fun close(): Unit {
+    fun close() {
         return underlying.close()
     }
 
@@ -222,6 +232,32 @@ data class Row(
         }
     }
 
+    fun jodaLocalDateTime(columnIndex: Int): org.joda.time.LocalDateTime {
+        return jodaLocalDateTimeOrNull(columnIndex)!!
+    }
+
+    fun jodaLocalDateTimeOrNull(columnIndex: Int): org.joda.time.LocalDateTime? {
+        val timestamp = sqlTimestampOrNull(columnIndex)
+        if (timestamp == null) {
+            return null
+        } else {
+            return org.joda.time.LocalDateTime(timestamp)
+        }
+    }
+
+    fun jodaLocalDateTime(columnLabel: String): org.joda.time.LocalDateTime {
+        return jodaLocalDateTimeOrNull(columnLabel)!!
+    }
+
+    fun jodaLocalDateTimeOrNull(columnLabel: String): org.joda.time.LocalDateTime? {
+        val timestamp = sqlTimestampOrNull(columnLabel)
+        if (timestamp == null) {
+            return null
+        } else {
+            return org.joda.time.LocalDateTime(timestamp)
+        }
+    }
+
     fun jodaLocalDate(columnLabel: String): org.joda.time.LocalDate {
         return jodaLocalDateOrNull(columnLabel)!!
     }
@@ -381,19 +417,19 @@ data class Row(
         return nullable(underlying.getDate(columnLabel))
     }
 
-    fun sqlDate(columnIndex: Int, cal: Calendar): Date {
+    fun sqlDate(columnIndex: Int, cal: java.util.Calendar): java.sql.Date {
         return sqlDateOrNull(columnIndex, cal)!!
     }
 
-    fun sqlDateOrNull(columnIndex: Int, cal: Calendar): Date? {
+    fun sqlDateOrNull(columnIndex: Int, cal: java.util.Calendar): java.sql.Date? {
         return nullable(underlying.getDate(columnIndex, cal))
     }
 
-    fun sqlDate(columnLabel: String, cal: Calendar): Date {
+    fun sqlDate(columnLabel: String, cal: java.util.Calendar): java.sql.Date {
         return sqlDateOrNull(columnLabel, cal)!!
     }
 
-    fun sqlDateOrNull(columnLabel: String, cal: Calendar): Date? {
+    fun sqlDateOrNull(columnLabel: String, cal: java.util.Calendar): java.sql.Date? {
         return nullable(underlying.getDate(columnLabel, cal))
     }
 
@@ -437,19 +473,19 @@ data class Row(
         return nullable(underlying.getTime(columnLabel))
     }
 
-    fun sqlTime(columnIndex: Int, cal: Calendar): java.sql.Time {
+    fun sqlTime(columnIndex: Int, cal: java.util.Calendar): java.sql.Time {
         return sqlTimeOrNull(columnIndex, cal)!!
     }
 
-    fun sqlTimeOrNull(columnIndex: Int, cal: Calendar): java.sql.Time? {
+    fun sqlTimeOrNull(columnIndex: Int, cal: java.util.Calendar): java.sql.Time? {
         return nullable(underlying.getTime(columnIndex, cal))
     }
 
-    fun sqlTime(columnLabel: String, cal: Calendar): java.sql.Time {
+    fun sqlTime(columnLabel: String, cal: java.util.Calendar): java.sql.Time {
         return sqlTimeOrNull(columnLabel, cal)!!
     }
 
-    fun sqlTimeOrNull(columnLabel: String, cal: Calendar): java.sql.Time? {
+    fun sqlTimeOrNull(columnLabel: String, cal: java.util.Calendar): java.sql.Time? {
         return nullable(underlying.getTime(columnLabel, cal))
     }
 
@@ -517,7 +553,7 @@ data class Row(
         return nullable(underlying.getClob(columnLabel))
     }
 
-    fun nClob(columnIndex: Int): java.sql.NClob {
+    fun nClob(columnIndex: Int): NClob {
         return nClobOrNull(columnIndex)!!
     }
 
@@ -525,7 +561,7 @@ data class Row(
         return nullable(underlying.getNClob(columnIndex))
     }
 
-    fun nClob(columnLabel: String): java.sql.NClob {
+    fun nClob(columnLabel: String): NClob {
         return nClobOrNull(columnLabel)!!
     }
 
@@ -597,20 +633,30 @@ data class Row(
         return nullable(underlying.getTimestamp(columnLabel))
     }
 
-    fun sqlTimestamp(columnIndex: Int, cal: Calendar): java.sql.Timestamp {
+    fun sqlTimestamp(columnIndex: Int, cal: java.util.Calendar): java.sql.Timestamp {
         return sqlTimestampOrNull(columnIndex, cal)!!
     }
 
-    fun sqlTimestampOrNull(columnIndex: Int, cal: Calendar): java.sql.Timestamp? {
+    fun sqlTimestampOrNull(columnIndex: Int, cal: java.util.Calendar): java.sql.Timestamp? {
         return nullable(underlying.getTimestamp(columnIndex, cal))
     }
 
-    fun sqlTimestamp(columnLabel: String, cal: Calendar): java.sql.Timestamp {
+    fun sqlTimestamp(columnLabel: String, cal: java.util.Calendar): java.sql.Timestamp {
         return sqlTimestampOrNull(columnLabel, cal)!!
     }
 
-    fun sqlTimestampOrNull(columnLabel: String, cal: Calendar): java.sql.Timestamp? {
+    fun sqlTimestampOrNull(columnLabel: String, cal: java.util.Calendar): java.sql.Timestamp? {
         return nullable(underlying.getTimestamp(columnLabel, cal))
+    }
+
+    fun uuid(columnLabel: String): java.util.UUID {
+        return uuidOrNull(columnLabel)!!
+    }
+
+    fun uuidOrNull(columnLabel: String): java.util.UUID? {
+        return nullable(underlying.getString(columnLabel)) ?. let {
+            java.util.UUID.fromString(it)
+        }
     }
 
     fun ref(columnIndex: Int): Ref {
