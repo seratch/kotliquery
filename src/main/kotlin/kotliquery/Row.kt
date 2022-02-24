@@ -5,20 +5,8 @@ import java.io.InputStream
 import java.io.Reader
 import java.math.BigDecimal
 import java.net.URL
-import java.sql.Blob
-import java.sql.NClob
-import java.sql.Ref
-import java.sql.ResultSet
-import java.sql.ResultSetMetaData
-import java.sql.SQLWarning
-import java.sql.Statement
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.sql.*
+import java.time.*
 
 /**
  * Represents ResultSet and its each row.
@@ -654,7 +642,7 @@ data class Row(
     }
 
     fun uuidOrNull(columnLabel: String): java.util.UUID? {
-        return nullable(underlying.getString(columnLabel)) ?. let {
+        return nullable(underlying.getString(columnLabel))?.let {
             java.util.UUID.fromString(it)
         }
     }

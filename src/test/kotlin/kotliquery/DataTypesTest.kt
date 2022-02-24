@@ -1,14 +1,9 @@
 package kotliquery
 
 import org.joda.time.chrono.ISOChronology
-import org.junit.*
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.OffsetDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import org.junit.Before
+import org.junit.Test
+import java.time.*
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -28,7 +23,8 @@ class DataTypesTest {
     fun before() {
         sessionOf(testDataSource).use { session ->
             session.execute(
-                queryOf("""
+                queryOf(
+                    """
                     drop table session_test if exists;
                     
                     create table session_test (
@@ -55,18 +51,21 @@ class DataTypesTest {
         sessionOf(testDataSource).use { session ->
             session.execute(queryOf("truncate table session_test;"))
 
-            session.execute(queryOf(""" 
+            session.execute(
+                queryOf(
+                    """
                     insert into session_test (val_tstz, val_ts, val_date, val_time, val_uuid) 
                         values (:tstz, :ts, :date, :time, :uuid);
                 """.trimIndent(),
-                mapOf(
-                    "tstz" to tstz,
-                    "ts" to ts,
-                    "date" to date,
-                    "time" to time,
-                    "uuid" to uuid
+                    mapOf(
+                        "tstz" to tstz,
+                        "ts" to ts,
+                        "date" to date,
+                        "time" to time,
+                        "uuid" to uuid
+                    )
                 )
-            ))
+            )
 
             session.single(queryOf("select * from session_test"), assertRowFn)
         }

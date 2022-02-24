@@ -11,19 +11,19 @@ data class Connection(
     val jtaCompatible: Boolean = false
 ) {
 
-    fun begin(): Unit {
+    fun begin() {
         underlying.autoCommit = false
-        if (jtaCompatible == false) {
+        if (!jtaCompatible) {
             underlying.isReadOnly = false
         }
     }
 
-    fun commit(): Unit {
+    fun commit() {
         underlying.commit()
         underlying.autoCommit = true
     }
 
-    fun rollback(): Unit {
+    fun rollback() {
         underlying.rollback()
         try {
             underlying.autoCommit = true
@@ -31,9 +31,8 @@ data class Connection(
         }
     }
 
-    fun close(): Unit {
+    fun close() {
         underlying.close()
     }
-
 
 }

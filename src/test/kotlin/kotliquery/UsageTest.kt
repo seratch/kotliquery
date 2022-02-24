@@ -147,7 +147,7 @@ class UsageTest {
     @Test
     fun testHikariCPUsage() {
 
-        val helloDataSource = HikariCP.init("hello","jdbc:h2:mem:hello", "user", "pass")
+        val helloDataSource = HikariCP.init("hello", "jdbc:h2:mem:hello", "user", "pass")
 
         assertNotSame(helloDataSource, testDataSource)
         assertSame(helloDataSource, HikariCP.dataSource("hello"))
@@ -301,7 +301,8 @@ class UsageTest {
 
             session.execute(queryOf("drop table if exists members"))
             session.execute(
-                queryOf("""
+                queryOf(
+                    """
                     create table members (
                         id serial primary key,
                         random_numbers integer array

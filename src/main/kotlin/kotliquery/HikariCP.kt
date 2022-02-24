@@ -41,7 +41,7 @@ object HikariCP {
 
     fun dataSource(name: String = "default"): HikariDataSource {
         val ds: HikariDataSource? = pools[name]
-        if (ds != null && ds.isClosed == false) {
+        if (ds != null && !ds.isClosed) {
             return ds
         } else {
             throw IllegalStateException("DataSource ($name) is absent.")
