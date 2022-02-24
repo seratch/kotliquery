@@ -72,7 +72,7 @@ open class Session(
                 is BigDecimal -> this.setBigDecimal(idx, v)
                 is java.sql.Array -> this.setArray(idx, v)
                 is URL -> this.setURL(idx, v)
-                is java.util.UUID -> this.setString(idx, v.toString())
+                // java.util.UUID should be set via setObject
                 else -> this.setObject(idx, v)
             }
         }
