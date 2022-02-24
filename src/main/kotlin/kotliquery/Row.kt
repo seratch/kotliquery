@@ -7,7 +7,6 @@ import java.math.BigDecimal
 import java.net.URL
 import java.sql.*
 import java.time.*
-import java.util.*
 
 /**
  * Represents ResultSet and its each row.
