@@ -642,9 +642,7 @@ data class Row(
     }
 
     fun uuidOrNull(columnLabel: String): java.util.UUID? {
-        return nullable(underlying.getString(columnLabel))?.let {
-            java.util.UUID.fromString(it)
-        }
+        return nullable(underlying.getObject(columnLabel, java.util.UUID::class.java))
     }
 
     fun ref(columnIndex: Int): Ref {
