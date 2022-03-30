@@ -376,6 +376,57 @@ class UsageTest {
     }
 
     @Test
+    fun batchPreparedStatementReturnGeneratedId() {
+        using(sessionOf(testDataSource)) { session ->
+
+            val now = Instant.now()
+            val res = session.batchPreparedStatementAndReturnGeneratedKeys(
+                "insert into members(created_at) values (?)",
+                listOf(listOf(now), listOf(now), listOf(now))
+            )
+
+            assertEquals(listOf(1L, 2L, 3L), res)
+
+            val nowAtEpoch = now.epochSecond
+            assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
+                session.list(queryOf("select id, created_at from members")) { row ->
+                    Pair(
+                        row.int("id"),
+                        row.instant("created_At").epochSecond
+                    )
+                })
+        }
+    }
+
+    @Test
+    fun batchPreparedNamedStatementAndReturnGeneratedKeys() {
+        using(sessionOf(testDataSource)) { session ->
+
+            val now = Instant.now()
+            val res = session.batchPreparedNamedStatementAndReturnGeneratedKeys(
+                "insert into members(created_at) values (:when)",
+                listOf(
+                    mapOf("when" to now),
+                    mapOf("when" to now),
+                    mapOf("when" to now)
+                )
+
+            )
+
+            assertEquals(listOf(1L, 2L, 3L), res)
+            val nowAtEpoch = now.epochSecond
+            assertEquals(listOf(Pair(1, nowAtEpoch), Pair(2, nowAtEpoch), Pair(3, nowAtEpoch)),
+                session.list(queryOf("select id, created_at from members")) { row ->
+                    Pair(
+                        row.int("id"),
+                        row.instant("created_At").epochSecond
+                    )
+                })
+
+        }
+    }
+
+    @Test
     fun testStrictMode() {
 
         val nameQuery = "select id, name, created_at from members where name = ?"
