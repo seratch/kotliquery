@@ -126,28 +126,57 @@ open class Session(
         namedParams: Collection<Map<String, Any?>>
     ): List<Int> {
         return using(connection.underlying.prepareStatement(Query(statement).cleanStatement)) { stmt ->
-
-            if (namedParams.isNotEmpty()) {
-                val extracted = Query.extractNamedParamsIndexed(statement)
-                namedParams.forEach { paramRow ->
-                    extracted.forEach { paramName, occurrences ->
-                        occurrences.forEach {
-                            stmt.setTypedParam(it + 1, paramRow[paramName].param())
-                        }
-                    }
-                    stmt.addBatch()
-                }
-            } else {
-                params.forEach { paramsRow ->
-                    paramsRow.forEachIndexed { idx, value ->
-                        stmt.setTypedParam(idx + 1, value.param())
-                    }
-                    stmt.addBatch()
-                }
-            }
+            batchUpdates(namedParams, statement, stmt, params)
             stmt.executeBatch().toList()
         }
     }
+
+    private fun rowsBatchedReturningGeneratedKeys(
+        statement: String,
+        params: Collection<Collection<Any?>>,
+        namedParams: Collection<Map<String, Any?>>
+    ): List<Long> {
+        return using(connection.underlying.prepareStatement(Query(statement).cleanStatement, Statement.RETURN_GENERATED_KEYS)) { stmt ->
+            batchUpdates(namedParams, statement, stmt, params)
+            stmt.executeBatch()
+            val generatedKeysRs = stmt.generatedKeys
+            val keys = mutableListOf<Long>()
+            while(generatedKeysRs.next()){
+                keys.add(generatedKeysRs.getLong(1))
+            }
+            if(keys.isEmpty()){
+                logger.warn("Unexpectedly, Statement#getGeneratedKeys doesn't have any elements for $statement")
+            }
+            keys.toList()
+        }
+    }
+
+    private fun batchUpdates(
+        namedParams: Collection<Map<String, Any?>>,
+        statement: String,
+        stmt: PreparedStatement,
+        params: Collection<Collection<Any?>>
+    ) {
+        if (namedParams.isNotEmpty()) {
+            val extracted = Query.extractNamedParamsIndexed(statement)
+            namedParams.forEach { paramRow ->
+                extracted.forEach { paramName, occurrences ->
+                    occurrences.forEach {
+                        stmt.setTypedParam(it + 1, paramRow[paramName].param())
+                    }
+                }
+                stmt.addBatch()
+            }
+        } else {
+            params.forEach { paramsRow ->
+                paramsRow.forEachIndexed { idx, value ->
+                    stmt.setTypedParam(idx + 1, value.param())
+                }
+                stmt.addBatch()
+            }
+        }
+    }
+
 
     private fun warningForTransactionMode() {
         if (transactional) {
@@ -180,9 +209,19 @@ open class Session(
         return rowsBatched(statement, emptyList(), params)
     }
 
+    fun batchPreparedNamedStatementAndReturnGeneratedKeys(statement: String, params: Collection<Map<String, Any?>>): List<Long> {
+        warningForTransactionMode()
+        return rowsBatchedReturningGeneratedKeys(statement, emptyList(), params)
+    }
+
     fun batchPreparedStatement(statement: String, params: Collection<Collection<Any?>>): List<Int> {
         warningForTransactionMode()
         return rowsBatched(statement, params, emptyList())
+    }
+
+    fun batchPreparedStatementAndReturnGeneratedKeys(statement: String, params: Collection<Collection<Any?>>): List<Long> {
+        warningForTransactionMode()
+        return rowsBatchedReturningGeneratedKeys(statement, params, emptyList())
     }
 
     fun forEach(query: Query, operator: (Row) -> Unit) {
