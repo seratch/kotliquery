@@ -136,15 +136,20 @@ open class Session(
         params: Collection<Collection<Any?>>,
         namedParams: Collection<Map<String, Any?>>
     ): List<Long> {
-        return using(connection.underlying.prepareStatement(Query(statement).cleanStatement, Statement.RETURN_GENERATED_KEYS)) { stmt ->
+        return using(
+            connection.underlying.prepareStatement(
+                Query(statement).cleanStatement,
+                Statement.RETURN_GENERATED_KEYS
+            )
+        ) { stmt ->
             batchUpdates(namedParams, statement, stmt, params)
             stmt.executeBatch()
             val generatedKeysRs = stmt.generatedKeys
             val keys = mutableListOf<Long>()
-            while(generatedKeysRs.next()){
+            while (generatedKeysRs.next()) {
                 keys.add(generatedKeysRs.getLong(1))
             }
-            if(keys.isEmpty()){
+            if (keys.isEmpty()) {
                 logger.warn("Unexpectedly, Statement#getGeneratedKeys doesn't have any elements for $statement")
             }
             keys.toList()
@@ -209,7 +214,10 @@ open class Session(
         return rowsBatched(statement, emptyList(), params)
     }
 
-    fun batchPreparedNamedStatementAndReturnGeneratedKeys(statement: String, params: Collection<Map<String, Any?>>): List<Long> {
+    fun batchPreparedNamedStatementAndReturnGeneratedKeys(
+        statement: String,
+        params: Collection<Map<String, Any?>>
+    ): List<Long> {
         warningForTransactionMode()
         return rowsBatchedReturningGeneratedKeys(statement, emptyList(), params)
     }
@@ -219,7 +227,10 @@ open class Session(
         return rowsBatched(statement, params, emptyList())
     }
 
-    fun batchPreparedStatementAndReturnGeneratedKeys(statement: String, params: Collection<Collection<Any?>>): List<Long> {
+    fun batchPreparedStatementAndReturnGeneratedKeys(
+        statement: String,
+        params: Collection<Collection<Any?>>
+    ): List<Long> {
         warningForTransactionMode()
         return rowsBatchedReturningGeneratedKeys(statement, params, emptyList())
     }
