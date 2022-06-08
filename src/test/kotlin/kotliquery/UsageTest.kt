@@ -474,6 +474,23 @@ class UsageTest {
         }
     }
 
+    @Test
+    fun testQueryTimeout() {
+        using(sessionOf(testDataSource)) { session ->
+            assertEquals(null, session.queryTimeout)
+
+            val statement = session.createPreparedStatement(queryOf("SELECT 1"))
+            assertEquals(0, statement.queryTimeout, "query timeout default = 0 is passed to statement")
+        }
+
+        val queryTimeoutSeconds = 5
+        using(sessionOf(testDataSource, queryTimeout = queryTimeoutSeconds)) { session ->
+            assertEquals(queryTimeoutSeconds, session.queryTimeout)
+
+            val statement = session.createPreparedStatement(queryOf("SELECT 1"))
+            assertEquals(queryTimeoutSeconds, statement.queryTimeout, "query timeout is passed to statement")
+        }
+    }
 
     private fun withPreparedStmt(query: Query, closure: (PreparedStatement) -> Unit) {
         using(sessionOf(testDataSource)) { session ->
