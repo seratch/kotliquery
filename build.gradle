@@ -13,7 +13,7 @@ targetCompatibility = 1.8
 
 buildscript {
     // https://search.maven.org/search?q=g:org.jetbrains.kotlin%20AND%20a:kotlin-gradle-plugin
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '1.6.21'
     ext.kotlinVersion = ext.kotlin_version
     repositories {
         mavenCentral()
