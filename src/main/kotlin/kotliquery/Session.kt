@@ -303,7 +303,7 @@ open class Session(
         return action.runWithSession(this)
     }
 
-    fun <A> transaction(operation: (TransactionalSession) -> A): A {
+    inline fun <A> transaction(operation: (TransactionalSession) -> A): A {
         try {
             connection.begin()
             transactional = true

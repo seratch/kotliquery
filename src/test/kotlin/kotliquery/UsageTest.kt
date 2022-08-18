@@ -1,5 +1,7 @@
 package kotliquery
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test
 import java.sql.PreparedStatement
@@ -141,6 +143,22 @@ class UsageTest {
             } catch (e: RuntimeException) {
             }
             assertEquals(2, session.run(idsQuery).size)
+        }
+    }
+
+    @Test
+    fun transactionInCoroutineUsage() {
+        using(sessionOf(testDataSource)) { session ->
+            runBlocking {
+                session.transaction { tx ->
+                    // Verifies that `transaction` doesn't break the coroutine scope
+                    delay(1)
+                    tx.run(queryOf(insert, "Chris", Date()).asUpdate)
+                }
+            }
+
+            val idsQuery = queryOf("select id from members").map { row -> row.int("id") }.asList
+            assertEquals(1, session.run(idsQuery).size)
         }
     }
 

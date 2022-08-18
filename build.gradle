@@ -38,6 +38,7 @@ dependencies {
     testImplementation "com.h2database:h2:2.1.210"
     testImplementation "junit:junit:4.13.2"
     testImplementation "ch.qos.logback:logback-classic:1.2.10"
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
 }
 
 mavenPublish {
