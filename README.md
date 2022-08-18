@@ -21,7 +21,7 @@ The quickest way to try this library out would be to start with a simple Gradle 
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.6.21'
+    ext.kotlin_version = '1.7.10'
     repositories {
         mavenCentral()
     }
@@ -34,8 +34,8 @@ repositories {
 }
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.github.seratch:kotliquery:1.8.0'
-    implementation 'com.h2database:h2:2.1.210'
+    implementation 'com.github.seratch:kotliquery:1.9.0'
+    implementation 'com.h2database:h2:2.1.214'
 }
 ```
 
