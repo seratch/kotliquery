@@ -60,7 +60,7 @@ For production-grade applications, utilizing a connection pool library for bette
 ```kotlin
 HikariCP.default("jdbc:h2:mem:hello", "user", "pass")
 
-using(sessionOf(HikariCP.dataSource())) { session ->
+sessionOf(HikariCP.dataSource()).use { session ->
    // working with the session
 }
 ```
@@ -107,7 +107,7 @@ val allIdsQuery = queryOf("select id from members").map { row -> row.int("id") }
 With a valid session object, you can perform the SQL statement. The type of returned `ids` would be safely determined by Kotlin compiler.
 
 ```kotlin
-val ids: List<Int> = session.run(allIdsQuery)
+val allIds: List<Int> = session.run(allIdsQuery)
 ```
 
 As you see, the extractor function is greatly flexible. You can define functions with any return type. All you need to do is to implement a function that extracts values from JDBC `ResultSet` interator and map them into a single expected type value. Here is a complete example:
@@ -127,7 +127,7 @@ val toMember: (Row) -> Member = { row ->
 }
 
 val allMembersQuery = queryOf("select id, name, created_at from members").map(toMember).asList
-val members: List<Member> = session.run(allMembersQuery)
+val allMembers: List<Member> = session.run(allMembersQuery)
 ```
 
 If you are sure that a query can return zero or one row, `asSingle` returns an optional single value as below:
@@ -144,7 +144,7 @@ Technically, it's also possible to use `asSingle` along with an SQL statement re
 val session = Session(HikariCP.dataSource(), strict = true)
 
 // an auto-closing code block for session
-using(sessionOf(HikariCP.dataSource(), strict = true)) { session ->
+sessionOf(HikariCP.dataSource(), strict = true).use { session ->
 
 }
 ```
@@ -173,19 +173,29 @@ You can specify the Java type for each parameter in the following way. Passing t
 
 ```kotlin
 val param = Parameter(param, String::class.java)
-queryOf("""select id, name 
-    from members 
-    where ? is null or ? = name""", 
-    param, param)
+queryOf(
+  """
+  select id, name
+  from members 
+  where ? is null or ? = name
+  """,
+  param,
+  param
+)
 ``` 
 
 As a handier way, you can use the following helper method.
 
 ```kotlin
-queryOf("""select id, name 
-    from members 
-    where ? is null or ? = name""", 
-    null.param<String>(), null.param<String>())
+queryOf(
+  """
+  select id, name 
+  from members 
+  where ? is null or ? = name
+  """, 
+  null.param<String>(),
+  null.param<String>()
+)
 ```
 
 This functionality is particularly useful in the situations like [the ones dsecribed here](https://www.postgresql.org/message-id/6ekbd7dm4d6su5b9i4hsf92ibv4j76n51f@4ax.com).
