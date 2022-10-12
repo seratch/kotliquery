@@ -1,5 +1,6 @@
 ## KotliQuery
 
+[![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin/blob/readme/README.md#libraries-frameworks-database)
 [![CI Builds](https://github.com/seratch/kotliquery/actions/workflows/ci-builds.yml/badge.svg)](https://github.com/seratch/kotliquery/actions/workflows/ci-builds.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.github.seratch/kotliquery.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.seratch%22%20AND%20a:%22kotliquery%22)
 
@@ -21,7 +22,7 @@ The quickest way to try this library out would be to start with a simple Gradle 
 apply plugin: 'kotlin'
 
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.7.20'
     repositories {
         mavenCentral()
     }
