@@ -19,6 +19,6 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: ${{ matrix.java }}
-      - uses: gradle/gradle-build-action@v1
+      - uses: gradle/gradle-build-action@v2.4.2
         with:
           arguments: test
