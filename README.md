@@ -231,6 +231,10 @@ session.transaction { tx ->
 
 As this library is a bit opinionated, transactions are available only with a code block. We intentionally do not support `begin` / `commit` methods. If you would like to manually manage the state of a transaction for some reason, you can use `session.connection.commit()` / `session.connection.rollback()` for it.
 
+## References
+
+* [Pro Kotlin Web Apps from Scratch](https://www.amazon.com/Pro-Kotlin-Apps-Scratch-Production-Ready-ebook/dp/B0BT1LSDFJ/) by August Lilleaas: uses KotliQuery to demonstrate how to efficiently run SQL queries
+
 ## License
 
 The MIT License
