@@ -31,7 +31,7 @@ repositories {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation "org.slf4j:slf4j-api:1.7.36"
-    implementation "joda-time:joda-time:2.11.0"
+    implementation "joda-time:joda-time:2.12.7"
     // TODO: upgrade to 5+ when dropping Java 8 supports
     implementation "com.zaxxer:HikariCP:4.0.3"
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
