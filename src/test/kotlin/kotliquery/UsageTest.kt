@@ -163,6 +163,28 @@ class UsageTest {
     }
 
     @Test
+    fun transactionWithNonLabeledReturnGetsCommitted() {
+        fun insertAndReturn(session: Session, name: String) {
+            session.transaction { tx ->
+                tx.run(queryOf(insert, name, Date()).asUpdate)
+                // Non-labeled return
+                return
+            }
+        }
+
+        using(sessionOf(testDataSource)) { session ->
+            insertAndReturn(session, "Chris")
+        }
+
+        using(sessionOf(testDataSource)) { session ->
+            val membersCount = session.single(queryOf("select count(*) as count from members")) { row ->
+                row.int("count")
+            }
+            assertEquals(1, membersCount)
+        }
+    }
+
+    @Test
     fun testHikariCPUsage() {
 
         val helloDataSource = HikariCP.init("hello", "jdbc:h2:mem:hello", "user", "pass")
